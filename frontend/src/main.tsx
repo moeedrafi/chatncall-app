@@ -5,11 +5,17 @@ import App from "./App.tsx";
 import { createBrowserRouter, RouterProvider } from "react-router";
 import Login from "@/pages/Login.tsx";
 import { Toaster } from "sonner";
+import Home from "@/pages/Home.tsx";
+import NotFound from "@/pages/NotFound.tsx";
 
 const router = createBrowserRouter([
   {
-    path: "*",
+    path: "/",
     element: <App />,
+    children: [
+      { index: true, element: <Home /> },
+      { path: "*", element: <NotFound /> },
+    ],
   },
   {
     path: "/login",
