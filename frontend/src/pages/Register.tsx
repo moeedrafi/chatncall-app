@@ -20,6 +20,7 @@ import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { PasswordInput } from "@/components/PasswordInput";
 
 const registerSchema = z.object({
   name: z.string().min(1),
@@ -92,19 +93,7 @@ const Register = () => {
                 control={form.control}
                 name="password"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <Input
-                        required
-                        {...field}
-                        type="password"
-                        placeholder="******"
-                        className="text-sm"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
+                  <PasswordInput field={field} label="Password" />
                 )}
               />
               <Button type="submit" className="w-full" variant="default">
