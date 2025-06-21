@@ -7,6 +7,7 @@ import Login from "@/pages/Login.tsx";
 import { Toaster } from "sonner";
 import Home from "@/pages/Home.tsx";
 import NotFound from "@/pages/NotFound.tsx";
+import Register from "@/pages/Register.tsx";
 
 const router = createBrowserRouter([
   {
@@ -21,13 +22,13 @@ const router = createBrowserRouter([
     path: "/login",
     element: <Login />,
   },
+  {
+    path: "/register",
+    element: <Register />,
+  },
   // {
   //     path: "/c",
   //     element: <Chat />,
-  // },
-  // {
-  //     path: "/sign-up",
-  //     element: <SignUp />,
   // },
 ]);
 
