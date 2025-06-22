@@ -6,6 +6,7 @@ import { createBrowserRouter, RouterProvider } from "react-router";
 import Login from "@/pages/Login.tsx";
 import { Toaster } from "sonner";
 import Home from "@/pages/Home.tsx";
+import Chat from "@/pages/Chat.tsx";
 import NotFound from "@/pages/NotFound.tsx";
 import Register from "@/pages/Register.tsx";
 
@@ -16,6 +17,7 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <Home /> },
       { path: "*", element: <NotFound /> },
+      { path: "/chat/:id", element: <Chat /> },
     ],
   },
   {
@@ -26,10 +28,6 @@ const router = createBrowserRouter([
     path: "/register",
     element: <Register />,
   },
-  // {
-  //     path: "/c",
-  //     element: <Chat />,
-  // },
 ]);
 
 createRoot(document.getElementById("root")!).render(
