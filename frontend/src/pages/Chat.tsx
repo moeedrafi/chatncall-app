@@ -114,7 +114,7 @@ const Chat = () => {
 
         {/* CHAT */}
         <div className="flex-1 overflow-y-auto">
-          <div className="flex flex-col gap-2 p-4">
+          <div className="flex flex-col gap-2 p-2 sm:p-4">
             {initialMessages.map((message) => (
               <React.Fragment key={message.id}>
                 {message.isOwn ? (
@@ -134,15 +134,15 @@ const Chat = () => {
 
                     {/* MESSAGE + SEEN */}
                     <div className="flex flex-col group">
-                      {/* Message */}
                       <div className="flex gap-2 p-3 bg-green-500 text-white shadow-sm rounded-lg">
-                        <p className="max-w-md w-max">{message.text}</p>
+                        <p className="text-xs sm:text-sm max-w-[200px] sm:max-w-md w-max">
+                          {message.text}
+                        </p>
                         <span className="self-end text-xs text-gray-300">
                           2:33 PM
                         </span>
                       </div>
 
-                      {/* Seen */}
                       {message.readBy && (
                         <div className="self-end mt-1">
                           <img
@@ -168,7 +168,9 @@ const Chat = () => {
                     />
 
                     <div className="flex gap-2 p-3 border border-gray-300 shadow-sm rounded-lg">
-                      <p className="max-w-md w-max">{message.text}</p>
+                      <p className="text-xs sm:text-sm max-w-[200px] sm:max-w-md w-max">
+                        {message.text}
+                      </p>
                       <span className="self-end text-xs text-gray-300">
                         2:33 PM
                       </span>
