@@ -9,6 +9,7 @@ import Home from "@/pages/Home.tsx";
 import Chat from "@/pages/Chat.tsx";
 import NotFound from "@/pages/NotFound.tsx";
 import Register from "@/pages/Register.tsx";
+import ChatGroup from "@/pages/ChatGroup.tsx";
 
 const router = createBrowserRouter([
   {
@@ -18,6 +19,7 @@ const router = createBrowserRouter([
       { index: true, element: <Home /> },
       { path: "*", element: <NotFound /> },
       { path: "/chat/:id", element: <Chat /> },
+      { path: "/chat/group", element: <ChatGroup /> },
     ],
   },
   {
