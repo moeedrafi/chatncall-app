@@ -98,13 +98,16 @@ const App = () => {
               className="flex items-center justify-between gap-4 px-4 py-4 hover:bg-slate-700 rounded-lg"
             >
               <div className="flex items-center gap-3">
-                <img
-                  src={friend.image}
-                  alt={`${friend.name} profile picture`}
-                  width={14}
-                  height={14}
-                  className="w-14 h-14 rounded-full object-cover"
-                />
+                <div className="relative">
+                  <img
+                    src={friend.image}
+                    alt={`${friend.name} profile picture`}
+                    width={14}
+                    height={14}
+                    className="w-14 h-14 rounded-full object-cover"
+                  />
+                  <div className="absolute top-2 right-0 w-2 h-2 bg-green-500 rounded-full" />
+                </div>
                 <div>
                   <h2 className="text-lg text-slate-100 font-medium">
                     {friend.name}

@@ -31,7 +31,10 @@ const Chat = () => {
               height={48}
               className="w-12 h-12 object-cover rounded-full"
             />
-            <span className="font-semibold">{friend.name}</span>
+            <div>
+              <h3 className="font-semibold">{friend.name}</h3>
+              <h5 className="text-sm text-green-500">Active</h5>
+            </div>
           </div>
 
           <div className="flex gap-2">
@@ -49,7 +52,7 @@ const Chat = () => {
         {/* CHAT */}
         <div className="flex-1 overflow-scroll">
           <div className="flex flex-col gap-3 mx-2 my-4 md:mx-4 lg:mx-8">
-            <div className="flex gap-1">
+            <div className="flex gap-2">
               <img
                 src="https://plus.unsplash.com/premium_photo-1749846961895-464c17182d86?q=80&w=876&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                 width={32}
@@ -61,7 +64,7 @@ const Chat = () => {
                 <p className="">What are you doing?</p>
               </div>
             </div>
-            <div className="self-end flex gap-1">
+            <div className="self-end flex gap-2">
               <img
                 src="https://plus.unsplash.com/premium_photo-1749846961895-464c17182d86?q=80&w=876&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                 width={32}
@@ -72,16 +75,22 @@ const Chat = () => {
                 <p>Nothing much. What about you?</p>
               </div>
             </div>
-            <div className="flex gap-1">
+            <div className="flex gap-2">
               <img
                 src="https://plus.unsplash.com/premium_photo-1749846961895-464c17182d86?q=80&w=876&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                 width={32}
                 height={32}
                 className="w-8 h-8 rounded-full object-cover"
               />
-              <div className="w-max p-2 bg-gray-200 rounded-lg">
-                <h3 className="text-muted-foreground text-sm">Ash Ketchum</h3>
-                <p className="">What are you doing?</p>
+              <div className="space-y-2">
+                <div className="w-max p-2 bg-gray-200 rounded-lg">
+                  <h3 className="text-muted-foreground text-sm">Ash Ketchum</h3>
+                  <p className="">What are you doing?</p>
+                </div>
+                <div className="w-max p-2 bg-gray-200 rounded-lg">
+                  <h3 className="text-muted-foreground text-sm">Ash Ketchum</h3>
+                  <p className="">What are you doing?</p>
+                </div>
               </div>
             </div>
           </div>
