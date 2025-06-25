@@ -1,5 +1,7 @@
 const NotFound = () => {
-  return <div>NotFound</div>;
+  return (
+    <section className="bg-gray-50 h-full w-full order-3">Not Found</section>
+  );
 };
 
 export default NotFound;
