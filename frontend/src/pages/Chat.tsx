@@ -110,7 +110,11 @@ const Chat = () => {
   return (
     <section className="bg-gray-50 h-full w-full order-3">
       <div className="h-full flex flex-col justify-between">
-        <ChatNavbar />
+        <ChatNavbar
+          isGroup={false}
+          name="Ash Ketchum"
+          image="https://plus.unsplash.com/premium_photo-1749846961895-464c17182d86?q=80&w=876&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+        />
 
         {/* CHAT */}
         <div className="flex-1 overflow-y-auto">
