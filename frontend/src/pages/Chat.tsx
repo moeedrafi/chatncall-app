@@ -1,9 +1,9 @@
 import React from "react";
 import { useParams } from "react-router";
-import { EllipsisVertical } from "lucide-react";
 
 import { ChatNavbar } from "@/components/ChatNavbar";
 import { MessageInput } from "@/components/MessageInput";
+import { MessageDropdown } from "@/components/MessageDropdown";
 
 const friend = {
   id: "ash-ketchum",
@@ -119,12 +119,8 @@ const Chat = () => {
               <React.Fragment key={message.id}>
                 {message.isOwn ? (
                   <div className="self-end flex gap-2 group">
-                    {/* MENU */}
-                    <button className="self-center p-1 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-gray-100 rounded-full">
-                      <EllipsisVertical size={16} className="text-gray-400" />
-                    </button>
+                    <MessageDropdown />
 
-                    {/* PROFILE PIC */}
                     <img
                       src={message.senderImage}
                       width={32}
@@ -133,7 +129,7 @@ const Chat = () => {
                     />
 
                     {/* MESSAGE + SEEN */}
-                    <div className="flex flex-col group">
+                    <div className="flex flex-col">
                       <div className="flex gap-2 p-3 bg-green-500 text-white shadow-sm rounded-lg">
                         <p className="text-xs sm:text-sm max-w-[200px] sm:max-w-md w-max">
                           {message.text}
@@ -156,10 +152,6 @@ const Chat = () => {
                   </div>
                 ) : (
                   <div className="flex gap-2 group">
-                    <button className="order-2 p-1 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-gray-100 rounded-full">
-                      <EllipsisVertical size={16} className="text-gray-400" />
-                    </button>
-
                     <img
                       src={message.senderImage}
                       width={32}
