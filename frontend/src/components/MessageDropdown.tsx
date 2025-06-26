@@ -1,21 +1,14 @@
 import { useState } from "react";
 import { EllipsisVertical, Trash2 } from "lucide-react";
+
+import { Alert } from "@/components/Alert";
+import { AlertDialog } from "@/components/ui/alert-dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 
 export const MessageDropdown = () => {
   const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false);
@@ -45,25 +38,11 @@ export const MessageDropdown = () => {
       </DropdownMenu>
 
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete message</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete this message? This action cannot
-              be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDelete}
-              className="bg-red-600 hover:bg-red-700"
-            >
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
+        <Alert
+          heading="Delete message"
+          handleDelete={handleDelete}
+          subHeading="Are you sure you want to delete this message? This action cannot be undone."
+        />
       </AlertDialog>
     </div>
   );

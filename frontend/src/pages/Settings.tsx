@@ -26,9 +26,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Lock, LogOut, Palette, Save, User } from "lucide-react";
+import { Lock, LogOut, Palette, Save, Trash2, User } from "lucide-react";
 import { PasswordInput } from "@/components/PasswordInput";
 import { Alert } from "@/components/Alert";
+import { AlertDialog, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
 const loginSchema = z.object({
   email: z.string().email(),
@@ -277,11 +278,19 @@ const Settings = () => {
                 Permanently delete your account and all data
               </p>
             </div>
-            <Alert
-              label="Delete Account"
-              heading="Are you absolutely sure?"
-              subHeading="This action cannot be undone. This will permanently delete your account and remove all your data from our servers."
-            />
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive">
+                  <Trash2 size={16} className="mr-2" />
+                  Delete Account
+                </Button>
+              </AlertDialogTrigger>
+              <Alert
+                handleDelete={() => {}}
+                heading="Are you absolutely sure?"
+                subHeading="This action cannot be undone. This will permanently delete your account and remove all your data from our servers."
+              />
+            </AlertDialog>
           </div>
         </CardContent>
       </Card>
