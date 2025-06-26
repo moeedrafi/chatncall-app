@@ -10,6 +10,7 @@ import Chat from "@/pages/Chat.tsx";
 import NotFound from "@/pages/NotFound.tsx";
 import Register from "@/pages/Register.tsx";
 import ChatGroup from "@/pages/ChatGroup.tsx";
+import Settings from "@/pages/Settings.tsx";
 
 const router = createBrowserRouter([
   {
@@ -19,6 +20,7 @@ const router = createBrowserRouter([
       { index: true, element: <Home /> },
       { path: "/chat/:id", element: <Chat /> },
       { path: "/chat/group", element: <ChatGroup /> },
+      { path: "/settings", element: <Settings /> },
     ],
   },
   { path: "/login", element: <Login /> },
