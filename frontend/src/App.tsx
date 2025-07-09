@@ -71,7 +71,7 @@ const App = () => {
 
       <section
         className={cn(
-          "md:w-[30%] flex-1 overflow-scroll space-y-5 bg-slate-900 sm:order-2 py-4 px-4",
+          "md:w-[30%] flex-1 overflow-y-auto space-y-5 bg-slate-900 sm:order-2 py-4 px-4",
           isChatRoute || isSettingsRoute
             ? "hidden md:flex-none md:block"
             : "md:flex-none"
