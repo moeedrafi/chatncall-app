@@ -3,7 +3,7 @@ import express from "express";
 import cookieParser from "cookie-parser";
 
 import userRouter from "./routes/user.routes.js";
-import messageRouter from "./routes/message.routes.js";
+import messagesRouter from "./routes/message.routes.js";
 import conversationRouter from "./routes/conversation.routes.js";
 import friendRequestRouter from "./routes/friendRequest.routes.js";
 import { errorHandler } from "./middleware/errorHandler.middleware.js";
@@ -22,7 +22,7 @@ app.use(express.static("public"));
 app.use(cookieParser());
 
 app.use("/api/v1/users", userRouter);
-app.use("/api/v1/message", messageRouter);
+app.use("/api/v1/messages", messagesRouter);
 app.use("/api/v1/friends", friendRequestRouter);
 app.use("/api/v1/conversations", conversationRouter);
 

@@ -5,6 +5,8 @@ import {
   registerUser,
   refreshAccessToken,
   checkAuth,
+  getUser,
+  searchUser,
 } from "../controllers/user.controller.js";
 import { verifyJWT } from "../middleware/auth.middleware.js";
 
@@ -13,9 +15,10 @@ const router = Router();
 router.route("/register").post(registerUser);
 router.route("/login").post(loginUser);
 
-// secure route
+router.route("/:id").get(verifyJWT, getUser);
 router.route("/logout").post(verifyJWT, logoutUser);
-router.route("/refresh-user").post(verifyJWT, refreshAccessToken);
 router.route("/check-auth").get(verifyJWT, checkAuth);
+router.route("/search-users").get(verifyJWT, searchUser);
+router.route("/refresh-token").post(verifyJWT, refreshAccessToken);
 
 export default router;

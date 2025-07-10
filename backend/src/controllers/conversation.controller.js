@@ -13,10 +13,15 @@ const deleteConversation = asyncHandler(async (req, res) => {});
 
 const leaveGroup = asyncHandler(async (req, res) => {});
 
+const addUser = asyncHandler(async (req, res) => {});
+const removeUser = asyncHandler(async (req, res) => {});
+
 export {
   getConversations,
   getConversation,
   deleteConversation,
   leaveGroup,
+  addUser,
+  removeUser,
   newConversation,
 };
