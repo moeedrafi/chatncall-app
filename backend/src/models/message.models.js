@@ -2,27 +2,24 @@ import mongoose, { Schema } from "mongoose";
 
 const messageSchema = new Schema(
   {
-    message: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    seenBy: [
-      {
-        userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-        seenAt: { type: Date },
-      },
-    ],
-    userId: {
+    body: { type: String },
+    image: { type: String },
+    sender: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
-    chatId: {
+    conversation: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Chat",
+      ref: "Conversation",
       required: true,
     },
+    seenBy: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
   },
   { timestamps: true }
 );

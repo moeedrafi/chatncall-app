@@ -16,10 +16,13 @@ const friendRequestSchema = new Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
+      index: true,
     },
   },
   { timestamps: true }
 );
+
+friendRequestSchema.index({ sender: 1, receiver: 1 }, { unique: true });
 
 export const FriendRequest = mongoose.model(
   "FriendRequest",
