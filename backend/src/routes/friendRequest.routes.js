@@ -1,8 +1,9 @@
 import { Router } from "express";
 import {
-  loginUser,
-  logoutUser,
-  registerUser,
+  getRequests,
+  acceptRequest,
+  rejectRequest,
+  getFriendsList,
 } from "../controllers/friendRequest.controller.js";
 import { verifyJWT } from "../middleware/auth.middleware.js";
 
