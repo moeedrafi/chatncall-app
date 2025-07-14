@@ -13,10 +13,13 @@ const acceptRequest = asyncHandler(async (req, res) => {});
 
 const rejectRequest = asyncHandler(async (req, res) => {});
 
+const searchUsersToAdd = asyncHandler(async (req, res) => {});
+
 export {
   getRequests,
   sendRequest,
   acceptRequest,
   rejectRequest,
   getFriendsList,
+  searchUsersToAdd,
 };

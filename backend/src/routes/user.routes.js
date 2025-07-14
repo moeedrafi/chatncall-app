@@ -6,7 +6,6 @@ import {
   refreshAccessToken,
   checkAuth,
   getUser,
-  searchUser,
 } from "../controllers/user.controller.js";
 import { verifyJWT } from "../middleware/auth.middleware.js";
 
@@ -18,7 +17,6 @@ router.route("/login").post(loginUser);
 router.route("/:id").get(verifyJWT, getUser);
 router.route("/logout").post(verifyJWT, logoutUser);
 router.route("/check-auth").get(verifyJWT, checkAuth);
-router.route("/search-users").get(verifyJWT, searchUser);
 router.route("/refresh-token").post(verifyJWT, refreshAccessToken);
 
 export default router;

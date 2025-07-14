@@ -101,8 +101,6 @@ const refreshAccessToken = asyncHandler(async (req, res) => {});
 
 const checkAuth = asyncHandler(async (req, res) => {});
 
-const searchUser = asyncHandler(async (req, res) => {});
-
 const getUser = asyncHandler(async (req, res) => {});
 
 export {
@@ -110,7 +108,6 @@ export {
   registerUser,
   loginUser,
   logoutUser,
-  searchUser,
   checkAuth,
   refreshAccessToken,
 };
