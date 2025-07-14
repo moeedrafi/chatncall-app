@@ -1,3 +1,4 @@
+import { OPTIONS } from "../constants.js";
 import { User } from "../models/user.models.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
@@ -5,6 +6,14 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 
 const generateAccessAndRefreshToken = async (userId) => {
   try {
+    const user = await User.findById(userId);
+    const accessToken = await user.generateAccessToken();
+    const refreshToken = await user.generateRefreshToken();
+
+    user.refreshToken = refreshToken;
+    await user.save({ validateBeforeSave: false });
+
+    return { accessToken, refreshToken };
   } catch (error) {
     throw new ApiError(
       500,
@@ -22,8 +31,7 @@ const registerUser = asyncHandler(async (req, res) => {
   if (existingUser) throw new ApiError(400, "User already exists!");
 
   const user = await User.create({ email, username, password });
-
-  // Create Cookies: Access and Refresh Token
+  const { accessToken } = generateAccessAndRefreshToken(user._id);
 
   const {
     passowrd: _,
@@ -33,7 +41,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
   return res
     .status(201)
-    .cookie("accessToken")
+    .cookie("accessToken", accessToken, OPTIONS)
     .json(
       new ApiResponse(
         201,
@@ -55,7 +63,7 @@ const loginUser = asyncHandler(async (req, res) => {
     throw new ApiError(401, "Invalid user credentials");
   }
 
-  // access Token
+  const { accessToken } = await generateAccessAndRefreshToken(user._id);
 
   const {
     password: _,
@@ -64,11 +72,11 @@ const loginUser = asyncHandler(async (req, res) => {
   } = user.toObject();
 
   return res
-    .status(201)
-    .cookie("accessToken")
+    .status(200)
+    .cookie("accessToken", accessToken, OPTIONS)
     .json(
       new ApiResponse(
-        201,
+        200,
         userWithoutSensitiveFields,
         "User Logged in Successfully!"
       )
