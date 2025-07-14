@@ -97,7 +97,34 @@ const logoutUser = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "User Logged Out!"));
 });
 
-const refreshAccessToken = asyncHandler(async (req, res) => {});
+const refreshAccessToken = asyncHandler(async (req, res) => {
+  const incomingRefreshToken = await User.findById(req.user._id);
+  if (!incomingRefreshToken) {
+    throw new ApiError(401, "Unauthorized Access!");
+  }
+
+  try {
+    const decodedToken = jwt.verify(
+      incomingRefreshToken,
+      process.env.REFRESH_TOKEN_SECRET
+    );
+
+    const user = await User.findById(user._id);
+    if (!user) throw new ApiError(401, "Invalid Refresh Token!");
+
+    if (incomingRefreshToken !== user.refreshToken)
+      throw new ApiError(401, "Refresh Token Expired!");
+
+    const { accessToken } = await generateAccessAndRefreshToken(user._id);
+
+    return res
+      .status(200)
+      .cookie("accessToken", accessToken, OPTIONS)
+      .json(new ApiResponse(200, user, "Token Refreshed!"));
+  } catch (error) {
+    throw new ApiError(401, error?.message || "Invalid Token!");
+  }
+});
 
 const checkAuth = asyncHandler(async (req, res) => {
   const user = req.user;
@@ -113,10 +140,6 @@ const checkAuth = asyncHandler(async (req, res) => {
   } catch (error) {
     throw new ApiError(401, error?.message || "Invalid Token!");
   }
-
-  return res
-    .status(200)
-    .json(new ApiResponse(200, user, "User Authenticated!"));
 });
 
 const getUser = asyncHandler(async (req, res) => {});
