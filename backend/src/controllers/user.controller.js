@@ -142,7 +142,16 @@ const checkAuth = asyncHandler(async (req, res) => {
   }
 });
 
-const getUser = asyncHandler(async (req, res) => {});
+const getUser = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const user = await User.findById(id).select("-password -refreshToken").lean();
+  if (!user) throw new ApiError(404, "User not found!");
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, user, "User Found Successfully!"));
+});
 
 export {
   getUser,
