@@ -99,7 +99,25 @@ const logoutUser = asyncHandler(async (req, res) => {
 
 const refreshAccessToken = asyncHandler(async (req, res) => {});
 
-const checkAuth = asyncHandler(async (req, res) => {});
+const checkAuth = asyncHandler(async (req, res) => {
+  const user = req.user;
+  if (!user) throw new ApiError(401, "Invalid Token!");
+
+  try {
+    const { accessToken } = await generateAccessAndRefreshToken(user._id);
+
+    return res
+      .status(200)
+      .cookie("accessToken", accessToken, OPTIONS)
+      .json(new ApiResponse(200, user, "Token Verified!"));
+  } catch (error) {
+    throw new ApiError(401, error?.message || "Invalid Token!");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, user, "User Authenticated!"));
+});
 
 const getUser = asyncHandler(async (req, res) => {});
 
