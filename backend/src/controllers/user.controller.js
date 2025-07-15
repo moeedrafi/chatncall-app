@@ -153,6 +153,19 @@ const getUser = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, user, "User Found Successfully!"));
 });
 
+const searchUsersToAdd = asyncHandler(async (req, res) => {
+  const { username } = req.query;
+
+  const users = await User.findOne({
+    username: { $regex: username, $options: "i" },
+    _id: { $ne: req.user._id },
+  }).select("-password -refreshToken");
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, users, "Search successful!"));
+});
+
 export {
   getUser,
   registerUser,
@@ -160,4 +173,5 @@ export {
   logoutUser,
   checkAuth,
   refreshAccessToken,
+  searchUsersToAdd,
 };

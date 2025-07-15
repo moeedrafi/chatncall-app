@@ -118,7 +118,18 @@ const rejectRequest = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, existingRequest, "Friend Request Rejected!"));
 });
 
-const searchUsersToAdd = asyncHandler(async (req, res) => {});
+const searchUsersToAdd = asyncHandler(async (req, res) => {
+  const { username } = req.query;
+
+  const users = await User.findOne({
+    username: { $regex: username, $options: "i" },
+    _id: { $ne: req.user._id },
+  }).select("-password -refreshToken");
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, users, "Search successful!"));
+});
 
 export {
   getRequests,
