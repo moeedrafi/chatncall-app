@@ -1,4 +1,5 @@
 import { ApiError } from "../utils/ApiError.js";
+import { User } from "../models/user.models.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { FriendRequest } from "../models/friendRequest.models.js";
@@ -33,7 +34,39 @@ const getFriendsList = asyncHandler(async (req, res) => {
   return res.status(200).json(new ApiResponse(200, friends, "Friends List!"));
 });
 
-const sendRequest = asyncHandler(async (req, res) => {});
+const sendRequest = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const existingUser = await User.findById(id);
+  if (!existingUser) return ApiError(404, "User not found!");
+
+  if (req.user._id.toString() === id) {
+    return ApiError(404, "Cannot send to yourself!");
+  }
+
+  const existingRequest = await FriendRequest.findOne({
+    $or: [
+      { receiver: id, sender: req.user._id },
+      { sender: id, receiver: req.user._id },
+    ],
+  });
+  if (existingRequest) {
+    return ApiError(
+      404,
+      "Friend request already exists or you are already friends"
+    );
+  }
+
+  const friendRequest = await FriendRequest.create({
+    status: "pending",
+    sender: req.user._id,
+    receiver: existingUser._id,
+  });
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, friendRequest, "Friend Requset Sent!"));
+});
 
 const acceptRequest = asyncHandler(async (req, res) => {});
 
