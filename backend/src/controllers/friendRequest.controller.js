@@ -50,22 +50,34 @@ const sendRequest = asyncHandler(async (req, res) => {
       { sender: id, receiver: req.user._id },
     ],
   });
-  if (existingRequest) {
-    return ApiError(
-      404,
-      "Friend request already exists or you are already friends"
-    );
+  if (existingRequest.status === "pending") {
+    return ApiError(404, "Friend request already exists");
   }
 
-  const friendRequest = await FriendRequest.create({
+  if (existingRequest.status === "accepted") {
+    return ApiError(404, "You are already friends");
+  }
+
+  if (existingRequest.status === "rejected") {
+    existingRequest.status === "pending";
+    existingRequest.sender = req.user._id;
+    existingRequest.receiver = id;
+    await existingRequest.save();
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, existingRequest, "Friend request re-sent!"));
+  }
+
+  const newRequest = await FriendRequest.create({
     status: "pending",
     sender: req.user._id,
-    receiver: existingUser._id,
+    receiver: id,
   });
 
   return res
     .status(200)
-    .json(new ApiResponse(200, friendRequest, "Friend Requset Sent!"));
+    .json(new ApiResponse(200, newRequest, "Friend Requset Sent!"));
 });
 
 const acceptRequest = asyncHandler(async (req, res) => {
