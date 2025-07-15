@@ -118,7 +118,24 @@ const createGroupConversation = asyncHandler(async (req, res) => {
     .json(new ApiResponse(201, fullGroup, "Group Created Successfully!"));
 });
 
-const leaveGroup = asyncHandler(async (req, res) => {});
+const leaveGroup = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const existingGroup = await Conversation.findById(id);
+  if (!existingGroup) throw new ApiError(404, "Group not exists!");
+
+  const isParticipant = existingGroup.users.find(
+    (user) => user.id === req.user._id
+  );
+  if (!isParticipant) throw new ApiError(400, "Not a part of group!");
+
+  await Conversation.findByIdAndUpdate(id, {
+    $pull: { users: req.user._id },
+  });
+
+  return res
+    .status(201)
+    .json(new ApiResponse(201, {}, "Left Group Successfully!"));
+});
 
 const addUser = asyncHandler(async (req, res) => {});
 const removeUser = asyncHandler(async (req, res) => {});
