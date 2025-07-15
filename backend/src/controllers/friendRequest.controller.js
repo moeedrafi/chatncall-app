@@ -95,7 +95,28 @@ const acceptRequest = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, existingRequest, "Friend Requset Accepted!"));
 });
 
-const rejectRequest = asyncHandler(async (req, res) => {});
+const rejectRequest = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const existingUser = await User.findById(id);
+  if (!existingUser) throw new ApiError(404, "User not found!");
+
+  const existingRequest = await FriendRequest.findOne({
+    status: "pending",
+    sender: id,
+    receiver: req.user._id,
+  });
+  if (!existingRequest || existingRequest.status !== "pending") {
+    throw new ApiError(400, "No pending friend request found");
+  }
+
+  existingRequest.status = "rejected";
+  await existingRequest.save();
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, existingRequest, "Friend Request Rejected!"));
+});
 
 const searchUsersToAdd = asyncHandler(async (req, res) => {});
 
