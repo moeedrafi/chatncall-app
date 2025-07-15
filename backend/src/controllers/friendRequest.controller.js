@@ -16,7 +16,22 @@ const getRequests = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, receivedRequests, "Friend Requests Received!"));
 });
 
-const getFriendsList = asyncHandler(async (req, res) => {});
+const getFriendsList = asyncHandler(async (req, res) => {
+  const friendRequests = await FriendRequest.find({
+    status: "accepted",
+    $or: [{ receiver: req.user._id }, { sender: req.user._id }],
+  })
+    .populate("sender", "username avatar email")
+    .populate("receiver", "username avatar email");
+
+  const friends = friendRequests.map((request) =>
+    request.sender._id.toString() === req.user._id.toString()
+      ? request.receiver
+      : request.sender
+  );
+
+  return res.status(200).json(new ApiResponse(200, friends, "Friends List!"));
+});
 
 const sendRequest = asyncHandler(async (req, res) => {});
 
