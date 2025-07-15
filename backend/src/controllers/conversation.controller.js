@@ -74,7 +74,26 @@ const newConversation = asyncHandler(async (req, res) => {
     .json(new ApiResponse(201, fullConversation, "Conversation Created!"));
 });
 
-const deleteConversation = asyncHandler(async (req, res) => {});
+const deleteConversation = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const existingConversation = await Conversation.findById(id);
+  if (!existingConversation) throw new ApiError(404, "Conversation not found!");
+
+  const isParticipant = existingConversation.users.some(
+    (users) => users._id.toString() === req.user._id.toString()
+  );
+  if (!isParticipant) throw new ApiError(404, "Cannot access conversation!");
+
+  const deleteConvo = await Conversation.deleteOne({
+    _id: existingConversation._id,
+  }).lean();
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, deleteConvo, "Deleted Conversation!"));
+});
+
+const createGroupConversation = asyncHandler(async (req, res) => {});
 
 const leaveGroup = asyncHandler(async (req, res) => {});
 
@@ -89,4 +108,5 @@ export {
   addUser,
   removeUser,
   newConversation,
+  createGroupConversation,
 };
