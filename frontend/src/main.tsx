@@ -1,16 +1,18 @@
-import { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
 import "./index.css";
-import App from "./App.tsx";
-import { createBrowserRouter, RouterProvider } from "react-router";
-import Login from "@/pages/Login.tsx";
+import { createRoot } from "react-dom/client";
 import { Toaster } from "sonner";
+import { lazy, StrictMode, Suspense } from "react";
+import { createBrowserRouter, RouterProvider } from "react-router";
+
+import App from "./App.tsx";
 import Home from "@/pages/Home.tsx";
-import Chat from "@/pages/Chat.tsx";
-import NotFound from "@/pages/NotFound.tsx";
+import Login from "@/pages/Login.tsx";
 import Register from "@/pages/Register.tsx";
-import ChatGroup from "@/pages/ChatGroup.tsx";
-import Settings from "@/pages/Settings.tsx";
+import NotFound from "@/pages/NotFound.tsx";
+
+const Chat = lazy(() => import("@/pages/Chat.tsx"));
+const Settings = lazy(() => import("@/pages/Settings.tsx"));
+const ChatGroup = lazy(() => import("@/pages/ChatGroup.tsx"));
 
 const router = createBrowserRouter([
   {
@@ -30,7 +32,9 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <RouterProvider router={router} />
-    <Toaster position="top-right" />
+    <Suspense fallback={<div className="text-center p-4">Loading...</div>}>
+      <RouterProvider router={router} />
+      <Toaster position="top-right" />
+    </Suspense>
   </StrictMode>
 );
