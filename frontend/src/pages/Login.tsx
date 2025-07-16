@@ -1,4 +1,11 @@
+import { z } from "zod";
+import { Link } from "react-router";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { PasswordInput } from "@/components/PasswordInput";
 import {
   Card,
   CardContent,
@@ -15,12 +22,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Link } from "react-router";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { PasswordInput } from "@/components/PasswordInput";
-import { Input } from "@/components/ui/input";
 
 const loginSchema = z.object({
   email: z.string().email(),
@@ -33,8 +34,20 @@ const Login = () => {
     defaultValues: { email: "", password: "" },
   });
 
-  const onSubmit = (values: z.infer<typeof loginSchema>) => {
-    console.log(values);
+  const onSubmit = async (values: z.infer<typeof loginSchema>) => {
+    try {
+      const response = await fetch("http://localhost:8000/api/v1/users/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(values),
+      });
+      const data = await response.json();
+      console.log(data);
+    } catch (error) {
+      console.log("Login error:", error);
+    }
   };
 
   return (
@@ -76,7 +89,11 @@ const Login = () => {
                   <PasswordInput field={field} label="Password" />
                 )}
               />
-              <Button type="submit" className="w-full" variant="default">
+              <Button
+                type="submit"
+                className="w-full cursor-pointer"
+                variant="default"
+              >
                 Sign Up
               </Button>
             </form>
@@ -84,7 +101,7 @@ const Login = () => {
         </CardContent>
 
         <CardFooter className="flex-col gap-2">
-          <Button variant="ghost" className="w-full">
+          <Button variant="ghost" className="w-full cursor-pointer">
             Login with Google
           </Button>
 

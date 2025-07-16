@@ -1,4 +1,11 @@
+import { z } from "zod";
+import { Link } from "react-router";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { PasswordInput } from "@/components/PasswordInput";
 import {
   Card,
   CardContent,
@@ -15,15 +22,9 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Link } from "react-router";
-import { useForm } from "react-hook-form";
-import { Input } from "@/components/ui/input";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { PasswordInput } from "@/components/PasswordInput";
 
 const registerSchema = z.object({
-  name: z.string().min(1),
+  username: z.string().min(1),
   email: z.string().email(),
   password: z.string().min(6),
 });
@@ -31,16 +32,31 @@ const registerSchema = z.object({
 const Register = () => {
   const form = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
-    defaultValues: { name: "", email: "", password: "" },
+    defaultValues: { username: "", email: "", password: "" },
   });
 
-  const onSubmit = (values: z.infer<typeof registerSchema>) => {
-    console.log(values);
+  const onSubmit = async (values: z.infer<typeof registerSchema>) => {
+    try {
+      const response = await fetch(
+        "http://localhost:8000/api/v1/users/register",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(values),
+        }
+      );
+      const data = await response.json();
+      console.log(data);
+    } catch (error) {
+      console.log("Registration error:", error);
+    }
   };
 
   return (
     <section className="h-screen py-4 px-4 md:px-8 lg:px-16 xl:px-32 flex items-center justify-center">
-      <Card className="w-full max-w-sm md:max-w-md">
+      <Card className="w-full shadow-lg max-w-sm md:max-w-md">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl">Register</CardTitle>
           <CardDescription>
@@ -53,16 +69,16 @@ const Register = () => {
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <FormField
                 control={form.control}
-                name="name"
+                name="username"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Name</FormLabel>
+                    <FormLabel>Username</FormLabel>
                     <FormControl>
                       <Input
                         required
                         {...field}
                         type="text"
-                        placeholder="John Doe"
+                        placeholder="johndoe"
                         className="text-sm"
                       />
                     </FormControl>
@@ -96,7 +112,11 @@ const Register = () => {
                   <PasswordInput field={field} label="Password" />
                 )}
               />
-              <Button type="submit" className="w-full" variant="default">
+              <Button
+                type="submit"
+                className="w-full cursor-pointer"
+                variant="default"
+              >
                 Sign Up
               </Button>
             </form>
@@ -104,7 +124,7 @@ const Register = () => {
         </CardContent>
 
         <CardFooter className="flex-col gap-2">
-          <Button variant="ghost" className="w-full">
+          <Button variant="outline" className="w-full cursor-pointer">
             Login with Google
           </Button>
 
