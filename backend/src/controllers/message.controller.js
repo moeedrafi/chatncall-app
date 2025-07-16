@@ -63,6 +63,43 @@ const deleteMessage = asyncHandler(async (req, res) => {
   return res.status(200).json(new ApiResponse(200, {}, "Deleted Message!"));
 });
 
-const seenMessage = asyncHandler(async (req, res) => {});
+const seenMessage = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const message = await Message.findById(id);
+  if (!message) throw new ApiError(404, "Message not found!");
 
-export { newMessage, deleteMessage, getConversationMessages, seenMessage };
+  const alreadySeen = message.seenBy.some(
+    (user) => user.toString() === req.user._id.toString()
+  );
+  if (!alreadySeen) {
+    message.seenBy.push(req.user._id);
+    await message.save();
+  }
+
+  return res.status(200).json(new ApiResponse(200, message, "Marked as Seen!"));
+});
+
+const seenByMessage = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const message = await Message.findById(id).populate(
+    "seenBy",
+    "username avatar"
+  );
+  if (!message) throw new ApiError(404, "Message not found!");
+
+  if (message.sender.toString() !== req.user._id.toString()) {
+    throw new ApiError(400, "Cannot see seen list of someone else message");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, message.seenBy, "Seen List!"));
+});
+
+export {
+  newMessage,
+  deleteMessage,
+  getConversationMessages,
+  seenMessage,
+  seenByMessage,
+};
