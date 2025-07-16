@@ -76,6 +76,22 @@ const Settings = () => {
     console.log(values);
   };
 
+  const logOut = async () => {
+    try {
+      const response = await fetch(
+        "http://localhost:8000/api/v1/users/logout",
+        {
+          method: "POST",
+          credentials: "include",
+        }
+      );
+      const data = await response.json();
+      console.log(data);
+    } catch (error) {
+      console.log("Logout error:", error);
+    }
+  };
+
   return (
     <section className="h-screen overflow-y-auto order-1 sm:order-2 w-full space-y-6 py-4 px-4 md:px-8 lg:px-16">
       <Card className="w-full">
@@ -263,8 +279,9 @@ const Settings = () => {
               </p>
             </div>
             <Button
+              onClick={logOut}
               variant="outline"
-              className="text-red-700 border-red-300 hover:bg-red-100"
+              className="text-red-700 border-red-300 hover:bg-red-100 cursor-pointer"
             >
               <LogOut />
               Logout
