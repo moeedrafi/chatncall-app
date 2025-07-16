@@ -49,7 +49,19 @@ const getConversationMessages = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, messages, "Fetched Messages!"));
 });
 
-const deleteMessage = asyncHandler(async (req, res) => {});
+const deleteMessage = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const message = await Message.findById(id);
+  if (!message) throw new ApiError(404, "Message not found!");
+
+  if (message.sender.toString() !== req.user._id.toString()) {
+    throw new ApiError(400, "Cannot delete someone else message");
+  }
+
+  await Message.findByIdAndDelete(id);
+
+  return res.status(200).json(new ApiResponse(200, {}, "Deleted Message!"));
+});
 
 const seenMessage = asyncHandler(async (req, res) => {});
 
