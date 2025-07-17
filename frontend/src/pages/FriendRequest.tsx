@@ -1,9 +1,18 @@
 import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
 
 let timeoutId: NodeJS.Timeout;
 
+type User = {
+  _id: string;
+  username: string;
+  avatar: string;
+};
+
 const FriendRequest = () => {
+  const [searchedUsers, setSearchedUsers] = useState<User[]>([]);
+
   const handleSearch = async (e: React.ChangeEvent<HTMLInputElement>) => {
     clearTimeout(timeoutId);
 
@@ -17,11 +26,27 @@ const FriendRequest = () => {
           }
         );
         const data = await response.json();
-        console.log(data);
+        setSearchedUsers(data.data);
       } catch (error) {
-        console.log("Login error:", error);
+        console.log("Search Friends error:", error);
       }
     }, 500);
+  };
+
+  const add = async (id: string) => {
+    try {
+      const response = await fetch(
+        `http://localhost:8000/api/v1/friends/${id}/add`,
+        {
+          method: "POST",
+          credentials: "include",
+        }
+      );
+      const data = await response.json();
+      console.log(data);
+    } catch (error) {
+      console.log("Add Friends error:", error);
+    }
   };
 
   return (
@@ -39,38 +64,33 @@ const FriendRequest = () => {
       </div>
 
       <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-        <div className="col-span-2 bg-white p-4 border border-gray-200 rounded-xl shadow-md flex items-center justify-between w-full max-w-md">
-          <div className="flex items-center gap-3">
-            <img
-              loading="lazy"
-              src="https://plus.unsplash.com/premium_photo-1749846961895-464c17182d86?q=80&w=876&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-              alt={`Profile picture`}
-              className="w-12 h-12 rounded-full object-cover"
-            />
+        {searchedUsers.map((user) => (
+          <div
+            key={user._id}
+            className="col-span-2 bg-white p-4 border border-gray-200 rounded-xl shadow-md flex items-center justify-between w-full max-w-md"
+          >
+            <div className="flex items-center gap-3">
+              <img
+                loading="lazy"
+                src={user.avatar || "/noAvatar.png"}
+                alt={`${user.username} Profile picture`}
+                className="w-12 h-12 rounded-full object-cover"
+              />
 
-            <h3 className="font-semibold text-gray-800 text-base">johndoe</h3>
+              <h3 className="font-semibold text-gray-800 text-base">
+                {user.username}
+              </h3>
+            </div>
+
+            <Button
+              onClick={() => add(user._id)}
+              variant="destructive"
+              className="cursor-pointer"
+            >
+              Add
+            </Button>
           </div>
-
-          <Button variant="destructive" className="cursor-pointer">
-            Add
-          </Button>
-        </div>
-        <div className="col-span-2 bg-white p-4 border border-gray-200 rounded-xl shadow-md flex items-center justify-between w-full max-w-md">
-          <div className="flex items-center gap-3">
-            <img
-              loading="lazy"
-              src="https://plus.unsplash.com/premium_photo-1749846961895-464c17182d86?q=80&w=876&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-              alt={`Profile picture`}
-              className="w-12 h-12 rounded-full object-cover"
-            />
-
-            <h3 className="font-semibold text-gray-800 text-base">johndoe</h3>
-          </div>
-
-          <Button variant="destructive" className="cursor-pointer">
-            Add
-          </Button>
-        </div>
+        ))}
       </div>
     </section>
   );
