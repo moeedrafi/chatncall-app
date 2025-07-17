@@ -56,7 +56,7 @@ const Register = () => {
 
   return (
     <section className="h-screen py-4 px-4 md:px-8 lg:px-16 xl:px-32 flex items-center justify-center">
-      <Card className="w-full shadow-lg max-w-sm md:max-w-md">
+      <Card className="w-full shadow-lg border-gray-300 max-w-sm md:max-w-md">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl">Register</CardTitle>
           <CardDescription>
