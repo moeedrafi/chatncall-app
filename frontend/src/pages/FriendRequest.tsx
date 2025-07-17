@@ -1,7 +1,29 @@
 import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+let timeoutId: NodeJS.Timeout;
+
 const FriendRequest = () => {
+  const handleSearch = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    clearTimeout(timeoutId);
+
+    timeoutId = setTimeout(async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:8000/api/v1/users/search-users?username=${e.target.value.trim()}`,
+          {
+            method: "GET",
+            credentials: "include",
+          }
+        );
+        const data = await response.json();
+        console.log(data);
+      } catch (error) {
+        console.log("Login error:", error);
+      }
+    }, 500);
+  };
+
   return (
     <section className="hidden w-full order-3 md:block mx-5">
       <div className="my-5">
@@ -9,6 +31,7 @@ const FriendRequest = () => {
           <Search size={18} className="text-gray-500" />
           <input
             type="text"
+            onChange={handleSearch}
             placeholder="Search for friends"
             className="w-full bg-transparent outline-none text-sm placeholder:text-gray-400"
           />

@@ -155,8 +155,11 @@ const getUser = asyncHandler(async (req, res) => {
 
 const searchUsersToAdd = asyncHandler(async (req, res) => {
   const { username } = req.query;
+  if (!username) {
+    throw new ApiError(400, "Username query param is required.");
+  }
 
-  const users = await User.findOne({
+  const users = await User.find({
     username: { $regex: username, $options: "i" },
     _id: { $ne: req.user._id },
   }).select("-password -refreshToken");
