@@ -1,6 +1,6 @@
 import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 let timeoutId: NodeJS.Timeout;
 
@@ -10,8 +10,14 @@ type User = {
   avatar: string;
 };
 
+type Request = {
+  _id: string;
+  sender: { username: string };
+};
+
 const FriendRequest = () => {
   const [searchedUsers, setSearchedUsers] = useState<User[]>([]);
+  const [pendingRequest, setPendingRequest] = useState<Request[]>([]);
 
   const handleSearch = async (e: React.ChangeEvent<HTMLInputElement>) => {
     clearTimeout(timeoutId);
@@ -49,6 +55,26 @@ const FriendRequest = () => {
     }
   };
 
+  useEffect(() => {
+    const pendingRequests = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:8000/api/v1/friends/requests`,
+          {
+            method: "GET",
+            credentials: "include",
+          }
+        );
+        const data = await response.json();
+        setPendingRequest(data.data);
+      } catch (error) {
+        console.log("Pending Request error:", error);
+      }
+    };
+
+    pendingRequests();
+  }, []);
+
   return (
     <section className="hidden w-full order-3 md:block mx-5">
       <div className="my-5">
@@ -60,6 +86,35 @@ const FriendRequest = () => {
             placeholder="Search for friends"
             className="w-full bg-transparent outline-none text-sm placeholder:text-gray-400"
           />
+        </div>
+      </div>
+
+      <div>
+        <h3 className="font-semibold">Pending Requests</h3>
+        <div className="flex items-center gap-3 flex-wrap">
+          {pendingRequest.map((request) => (
+            <div
+              key={request._id}
+              className="my-5 bg-white p-4 border border-gray-200 rounded-xl shadow-md flex items-center justify-between w-full max-w-md"
+            >
+              <div className="flex items-center gap-3">
+                <img
+                  loading="lazy"
+                  src="/noAvatar.png"
+                  alt="Profile picture"
+                  className="w-12 h-12 rounded-full object-cover"
+                />
+
+                <h3 className="font-semibold text-gray-800 text-base">
+                  {request.sender.username}
+                </h3>
+              </div>
+
+              <Button variant="destructive" className="cursor-pointer">
+                Add Friend
+              </Button>
+            </div>
+          ))}
         </div>
       </div>
 
