@@ -13,6 +13,7 @@ import NotFound from "@/pages/NotFound.tsx";
 const Chat = lazy(() => import("@/pages/Chat.tsx"));
 const Settings = lazy(() => import("@/pages/Settings.tsx"));
 const ChatGroup = lazy(() => import("@/pages/ChatGroup.tsx"));
+const FriendRequest = lazy(() => import("@/pages/FriendRequest.tsx"));
 
 const router = createBrowserRouter([
   {
@@ -23,6 +24,7 @@ const router = createBrowserRouter([
       { path: "/chat/:id", element: <Chat /> },
       { path: "/chat/group", element: <ChatGroup /> },
       { path: "/settings", element: <Settings /> },
+      { path: "/add", element: <FriendRequest /> },
     ],
   },
   { path: "/login", element: <Login /> },
