@@ -12,7 +12,7 @@ type User = {
 
 type Request = {
   _id: string;
-  sender: { username: string };
+  sender: { _id: string; username: string };
 };
 
 const FriendRequest = () => {
@@ -43,6 +43,22 @@ const FriendRequest = () => {
     try {
       const response = await fetch(
         `http://localhost:8000/api/v1/friends/${id}/add`,
+        {
+          method: "POST",
+          credentials: "include",
+        }
+      );
+      const data = await response.json();
+      console.log(data);
+    } catch (error) {
+      console.log("Add Friends error:", error);
+    }
+  };
+
+  const accept = async (id: string) => {
+    try {
+      const response = await fetch(
+        `http://localhost:8000/api/v1/friends/${id}/accept`,
         {
           method: "POST",
           credentials: "include",
@@ -110,7 +126,11 @@ const FriendRequest = () => {
                 </h3>
               </div>
 
-              <Button variant="destructive" className="cursor-pointer">
+              <Button
+                onClick={() => accept(request.sender._id)}
+                variant="destructive"
+                className="cursor-pointer"
+              >
                 Add Friend
               </Button>
             </div>

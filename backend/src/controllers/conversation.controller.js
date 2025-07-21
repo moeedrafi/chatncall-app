@@ -9,7 +9,7 @@ const getConversations = asyncHandler(async (req, res) => {
   const conversations = await Conversation.find({
     users: req.user._id,
   })
-    .populate("users", "name email avatar")
+    .populate("users", "username avatar")
     .sort({ lastMessageAt: -1 })
     .lean();
 

@@ -2,6 +2,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { User } from "../models/user.models.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
+import { Conversation } from "../models/conversation.models.js";
 import { FriendRequest } from "../models/friendRequest.models.js";
 
 const getRequests = asyncHandler(async (req, res) => {
@@ -103,6 +104,11 @@ const acceptRequest = asyncHandler(async (req, res) => {
 
   existingRequest.status = "accepted";
   await existingRequest.save();
+
+  await Conversation.create({
+    isGroup: false,
+    users: [req.user._id, id],
+  });
 
   return res
     .status(200)

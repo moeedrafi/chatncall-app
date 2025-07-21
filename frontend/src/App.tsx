@@ -1,37 +1,44 @@
+import { useEffect, useState } from "react";
 import { Menu, Search } from "lucide-react";
 import { Link, Outlet, useMatch } from "react-router";
 
 import { cn } from "@/lib/utils";
 import { useRoutes } from "@/hooks/useRoutes";
 
-const friends = [
-  {
-    name: "Ash Ketchum",
-    description: "Ash: What are you doing?",
-    message: 4,
-    image:
-      "https://plus.unsplash.com/premium_photo-1749846961895-464c17182d86?q=80&w=876&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-  },
-  {
-    name: "Nigga Chin",
-    message: 0,
-    description: "Me: What are you doing?",
-    image:
-      "https://images.unsplash.com/photo-1750086721456-28c384a8896b?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-  },
-  {
-    name: "John Doe",
-    message: 4,
-    description: "John: What are you doing?",
-    image:
-      "https://images.unsplash.com/photo-1728443814449-7a2ad4d86ec3?q=80&w=1015&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-  },
-];
+type Conversation = {
+  _id: string;
+  users: {
+    _id: string;
+    username: string;
+    avatar: string;
+  }[];
+};
 
 const App = () => {
   const routes = useRoutes();
   const isChatRoute = useMatch("/chat/:id");
   const isSettingsRoute = useMatch("/settings");
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+
+  useEffect(() => {
+    const getConversations = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:8000/api/v1/conversations/`,
+          {
+            method: "GET",
+            credentials: "include",
+          }
+        );
+        const data = await response.json();
+        setConversations(data.data);
+      } catch (error) {
+        console.log("Fetching Conversation serror:", error);
+      }
+    };
+
+    getConversations();
+  }, []);
 
   return (
     <main className="h-dvh flex flex-col sm:flex-row overflow-hidden">
@@ -95,7 +102,7 @@ const App = () => {
 
         {/* LIST OF CHATS */}
         <div className="flex flex-col divide-y divide-gray-800">
-          {friends.map((friend, index) => (
+          {conversations.map((conversation, index) => (
             <div
               key={index}
               className="flex items-center justify-between gap-4 px-4 py-4 hover:bg-slate-700 rounded-lg"
@@ -103,8 +110,8 @@ const App = () => {
               <div className="flex items-center gap-3">
                 <div className="relative">
                   <img
-                    src={friend.image}
-                    alt={`${friend.name} profile picture`}
+                    src={conversation.users[0].avatar || "/noAvatar.png"}
+                    alt={`${conversation.users[0].username} profile picture`}
                     width={14}
                     height={14}
                     className="w-14 h-14 rounded-full object-cover"
@@ -113,16 +120,16 @@ const App = () => {
                 </div>
                 <div>
                   <h2 className="text-lg text-slate-100 font-medium">
-                    {friend.name}
+                    {conversation.users[0].username}
                   </h2>
-                  <p className="text-sm text-slate-400">{friend.description}</p>
+                  {/* <p className="text-sm text-slate-400">{friend.description}</p> */}
                 </div>
               </div>
-              {friend.message > 0 && (
+              {/* {friend.message > 0 && (
                 <span className="text-sm font-semibold text-slate-100 bg-green-500 rounded-full w-6 h-6 flex items-center justify-center">
                   {friend.message}
                 </span>
-              )}
+              )} */}
             </div>
           ))}
         </div>
