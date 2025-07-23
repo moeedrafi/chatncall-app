@@ -22,6 +22,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { useAuthStore } from "@/hooks/useAuth";
 
 const loginSchema = z.object({
   email: z.string().email(),
@@ -29,6 +30,8 @@ const loginSchema = z.object({
 });
 
 const Login = () => {
+  const { login } = useAuthStore();
+
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: { email: "", password: "" },
@@ -45,6 +48,7 @@ const Login = () => {
         body: JSON.stringify(values),
       });
       const data = await response.json();
+      login();
       console.log(data);
     } catch (error) {
       console.log("Login error:", error);

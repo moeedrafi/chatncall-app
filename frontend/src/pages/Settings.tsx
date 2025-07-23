@@ -30,6 +30,7 @@ import { Lock, LogOut, Palette, Save, Trash2, User } from "lucide-react";
 import { PasswordInput } from "@/components/PasswordInput";
 import { Alert } from "@/components/Alert";
 import { AlertDialog, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { useAuthStore } from "@/hooks/useAuth";
 
 const loginSchema = z.object({
   email: z.string().email(),
@@ -54,6 +55,8 @@ const passwordChangeSchema = z
   });
 
 const Settings = () => {
+  const { logout } = useAuthStore();
+
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: { email: "", fullName: "" },
@@ -86,6 +89,7 @@ const Settings = () => {
         }
       );
       const data = await response.json();
+      logout();
       console.log(data);
     } catch (error) {
       console.log("Logout error:", error);
