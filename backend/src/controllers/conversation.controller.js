@@ -22,7 +22,7 @@ const getConversation = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
   const conversation = await Conversation.findById(id)
-    .populate("users", "name email avatar")
+    .populate("users", "username avatar")
     .lean();
   if (!conversation) throw new ApiError(404, "Conversation not found");
 

@@ -102,36 +102,38 @@ const App = () => {
 
         {/* LIST OF CHATS */}
         <div className="flex flex-col divide-y divide-gray-800">
-          {conversations.map((conversation, index) => (
-            <div
-              key={index}
-              className="flex items-center justify-between gap-4 px-4 py-4 hover:bg-slate-700 rounded-lg"
-            >
-              <div className="flex items-center gap-3">
-                <div className="relative">
-                  <img
-                    src={conversation.users[0].avatar || "/noAvatar.png"}
-                    alt={`${conversation.users[0].username} profile picture`}
-                    width={14}
-                    height={14}
-                    className="w-14 h-14 rounded-full object-cover"
-                  />
-                  <div className="absolute top-2 right-0 w-2 h-2 bg-green-500 rounded-full" />
+          {conversations &&
+            conversations.map((conversation, index) => (
+              <Link
+                key={index}
+                to={`/chat/${conversation._id}`}
+                className="flex items-center justify-between gap-4 px-4 py-4 hover:bg-slate-700 rounded-lg"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="relative">
+                    <img
+                      src={conversation.users[0].avatar || "/noAvatar.png"}
+                      alt={`${conversation.users[0].username} profile picture`}
+                      width={14}
+                      height={14}
+                      className="w-14 h-14 rounded-full object-cover"
+                    />
+                    <div className="absolute top-2 right-0 w-2 h-2 bg-green-500 rounded-full" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg text-slate-100 font-medium">
+                      {conversation.users[0].username}
+                    </h2>
+                    {/* <p className="text-sm text-slate-400">{friend.description}</p> */}
+                  </div>
                 </div>
-                <div>
-                  <h2 className="text-lg text-slate-100 font-medium">
-                    {conversation.users[0].username}
-                  </h2>
-                  {/* <p className="text-sm text-slate-400">{friend.description}</p> */}
-                </div>
-              </div>
-              {/* {friend.message > 0 && (
+                {/* {friend.message > 0 && (
                 <span className="text-sm font-semibold text-slate-100 bg-green-500 rounded-full w-6 h-6 flex items-center justify-center">
                   {friend.message}
                 </span>
               )} */}
-            </div>
-          ))}
+              </Link>
+            ))}
         </div>
       </section>
 
