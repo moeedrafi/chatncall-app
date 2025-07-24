@@ -1,7 +1,10 @@
-import { z } from "zod";
 import { Link } from "react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+
+import { registerSchema } from "@/lib/schemas";
+import { useAuthStore } from "@/hooks/useAuth";
+import type { RegisterSchema } from "@/lib/schemas";
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -23,19 +26,15 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 
-const registerSchema = z.object({
-  username: z.string().min(1),
-  email: z.string().email(),
-  password: z.string().min(6),
-});
-
 const Register = () => {
-  const form = useForm<z.infer<typeof registerSchema>>({
+  const { login } = useAuthStore();
+
+  const form = useForm<RegisterSchema>({
     resolver: zodResolver(registerSchema),
     defaultValues: { username: "", email: "", password: "" },
   });
 
-  const onSubmit = async (values: z.infer<typeof registerSchema>) => {
+  const onSubmit = async (values: RegisterSchema) => {
     try {
       const response = await fetch(
         "http://localhost:8000/api/v1/users/register",
@@ -49,7 +48,7 @@ const Register = () => {
         }
       );
       const data = await response.json();
-      console.log(data);
+      login(data.data);
     } catch (error) {
       console.log("Registration error:", error);
     }

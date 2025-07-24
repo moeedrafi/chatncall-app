@@ -1,7 +1,10 @@
-import { z } from "zod";
 import { Link } from "react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+
+import { loginSchema } from "@/lib/schemas";
+import { useAuthStore } from "@/hooks/useAuth";
+import type { LoginSchema } from "@/lib/schemas";
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -22,22 +25,16 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useAuthStore } from "@/hooks/useAuth";
-
-const loginSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(6),
-});
 
 const Login = () => {
   const { login } = useAuthStore();
 
-  const form = useForm<z.infer<typeof loginSchema>>({
+  const form = useForm<LoginSchema>({
     resolver: zodResolver(loginSchema),
     defaultValues: { email: "", password: "" },
   });
 
-  const onSubmit = async (values: z.infer<typeof loginSchema>) => {
+  const onSubmit = async (values: LoginSchema) => {
     try {
       const response = await fetch("http://localhost:8000/api/v1/users/login", {
         method: "POST",
@@ -48,8 +45,7 @@ const Login = () => {
         body: JSON.stringify(values),
       });
       const data = await response.json();
-      login();
-      console.log(data);
+      login(data.data);
     } catch (error) {
       console.log("Login error:", error);
     }
