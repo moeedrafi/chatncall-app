@@ -9,7 +9,9 @@ import Home from "@/pages/Home.tsx";
 import Login from "@/pages/Login.tsx";
 import Register from "@/pages/Register.tsx";
 import NotFound from "@/pages/NotFound.tsx";
+import { PublicRoutes } from "@/components/PublicRoutes.tsx";
 import { ProtectedRoutes } from "@/components/ProtectedRoutes.tsx";
+import { AuthInitializer } from "@/components/AuthInitialize.tsx";
 
 const Chat = lazy(() => import("@/pages/Chat.tsx"));
 const Settings = lazy(() => import("@/pages/Settings.tsx"));
@@ -63,15 +65,31 @@ const router = createBrowserRouter([
       },
     ],
   },
-  { path: "/login", element: <Login /> },
-  { path: "/register", element: <Register /> },
+  {
+    path: "/login",
+    element: (
+      <PublicRoutes>
+        <Login />
+      </PublicRoutes>
+    ),
+  },
+  {
+    path: "/register",
+    element: (
+      <PublicRoutes>
+        <Register />
+      </PublicRoutes>
+    ),
+  },
   { path: "*", element: <NotFound /> },
 ]);
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <Suspense fallback={<div className="text-center p-4">Loading...</div>}>
-      <RouterProvider router={router} />
+      <AuthInitializer>
+        <RouterProvider router={router} />
+      </AuthInitializer>
       <Toaster position="top-right" />
     </Suspense>
   </StrictMode>

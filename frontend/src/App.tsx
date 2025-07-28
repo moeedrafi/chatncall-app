@@ -4,7 +4,6 @@ import { Link, Outlet, useMatch } from "react-router";
 
 import { cn } from "@/lib/utils";
 import { useRoutes } from "@/hooks/useRoutes";
-import { useAuthStore } from "@/hooks/useAuth";
 
 type Conversation = {
   _id: string;
@@ -21,61 +20,25 @@ const App = () => {
   const isSettingsRoute = useMatch("/settings");
   const [conversations, setConversations] = useState<Conversation[]>([]);
 
-  const { login, logout } = useAuthStore();
-  const [authLoading, setAuthLoading] = useState<boolean>(true);
-
   useEffect(() => {
-    if (!authLoading) {
-      const getConversations = async () => {
-        try {
-          const response = await fetch(
-            `http://localhost:8000/api/v1/conversations/`,
-            {
-              method: "GET",
-              credentials: "include",
-            }
-          );
-          const data = await response.json();
-          setConversations(data.data);
-        } catch (error) {
-          console.log("Fetching Conversation serror:", error);
-        }
-      };
-
-      getConversations();
-    }
-  }, [authLoading]);
-
-  useEffect(() => {
-    const checkAuth = async () => {
+    const getConversations = async () => {
       try {
         const response = await fetch(
-          `http://localhost:8000/api/v1/users/check-auth`,
+          `http://localhost:8000/api/v1/conversations/`,
           {
             method: "GET",
             credentials: "include",
           }
         );
         const data = await response.json();
-        login(data.data);
+        setConversations(data.data);
       } catch (error) {
-        console.log("User access token expired:", error);
-        logout();
-      } finally {
-        setAuthLoading(false);
+        console.log("Fetching Conversation serror:", error);
       }
     };
 
-    checkAuth();
-  }, [login, logout]);
-
-  if (authLoading) {
-    return (
-      <div className="h-screen flex items-center justify-center text-white">
-        Checking authentication...
-      </div>
-    );
-  }
+    getConversations();
+  }, []);
 
   return (
     <main className="h-dvh flex flex-col sm:flex-row overflow-hidden">
