@@ -9,6 +9,7 @@ import Home from "@/pages/Home.tsx";
 import Login from "@/pages/Login.tsx";
 import Register from "@/pages/Register.tsx";
 import NotFound from "@/pages/NotFound.tsx";
+import { ProtectedRoutes } from "@/components/ProtectedRoutes.tsx";
 
 const Chat = lazy(() => import("@/pages/Chat.tsx"));
 const Settings = lazy(() => import("@/pages/Settings.tsx"));
@@ -20,11 +21,46 @@ const router = createBrowserRouter([
     path: "/",
     element: <App />,
     children: [
-      { index: true, element: <Home /> },
-      { path: "/chat/:id", element: <Chat /> },
-      { path: "/chat/group", element: <ChatGroup /> },
-      { path: "/settings", element: <Settings /> },
-      { path: "/add", element: <FriendRequest /> },
+      {
+        index: true,
+        element: (
+          <ProtectedRoutes>
+            <Home />
+          </ProtectedRoutes>
+        ),
+      },
+      {
+        path: "/chat/:id",
+        element: (
+          <ProtectedRoutes>
+            <Chat />
+          </ProtectedRoutes>
+        ),
+      },
+      {
+        path: "/chat/group",
+        element: (
+          <ProtectedRoutes>
+            <ChatGroup />
+          </ProtectedRoutes>
+        ),
+      },
+      {
+        path: "/settings",
+        element: (
+          <ProtectedRoutes>
+            <Settings />
+          </ProtectedRoutes>
+        ),
+      },
+      {
+        path: "/add",
+        element: (
+          <ProtectedRoutes>
+            <FriendRequest />
+          </ProtectedRoutes>
+        ),
+      },
     ],
   },
   { path: "/login", element: <Login /> },
