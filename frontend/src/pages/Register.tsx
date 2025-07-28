@@ -1,3 +1,4 @@
+import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -51,6 +52,7 @@ const Register = () => {
       );
       const data = await response.json();
       login(data.data);
+      toast(data.message);
       form.reset();
       navigate("/");
     } catch (error) {
