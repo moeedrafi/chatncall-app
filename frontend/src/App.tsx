@@ -4,6 +4,7 @@ import { Link, Outlet, useMatch } from "react-router";
 
 import { cn } from "@/lib/utils";
 import { useRoutes } from "@/hooks/useRoutes";
+import { getAPI } from "./lib/api";
 
 type Conversation = {
   _id: string;
@@ -23,14 +24,7 @@ const App = () => {
   useEffect(() => {
     const getConversations = async () => {
       try {
-        const response = await fetch(
-          `http://localhost:8000/api/v1/conversations/`,
-          {
-            method: "GET",
-            credentials: "include",
-          }
-        );
-        const data = await response.json();
+        const data = await getAPI("/conversations/");
         setConversations(data.data);
       } catch (error) {
         console.log("Fetching Conversation serror:", error);

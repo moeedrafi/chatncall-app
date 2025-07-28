@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { cn } from "@/lib/utils";
+import { BASE_URL } from "@/lib/api";
 import { loginSchema } from "@/lib/schemas";
 import { useAuthStore } from "@/hooks/useAuth";
 import type { LoginSchema } from "@/lib/schemas";
@@ -38,21 +39,26 @@ const Login = () => {
 
   const onSubmit = async (values: LoginSchema) => {
     try {
-      const response = await fetch("http://localhost:8000/api/v1/users/login", {
+      const response = await fetch(`${BASE_URL}/users/login`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify(values),
       });
+
       const data = await response.json();
+
+      if (!response.ok) {
+        toast(data.message || "Login failed");
+        return;
+      }
+
       login(data.data);
-      toast(data.message);
       form.reset();
       navigate("/");
+      toast(data.message);
     } catch (error) {
-      console.log("Login error:", error);
+      toast("Login error:" + error);
     }
   };
 

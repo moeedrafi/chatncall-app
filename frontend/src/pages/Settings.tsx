@@ -31,6 +31,7 @@ import { PasswordInput } from "@/components/PasswordInput";
 import { Alert } from "@/components/Alert";
 import { AlertDialog, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useAuthStore } from "@/hooks/useAuth";
+import { BASE_URL } from "@/lib/api";
 
 const loginSchema = z.object({
   email: z.string().email(),
@@ -81,13 +82,10 @@ const Settings = () => {
 
   const logOut = async () => {
     try {
-      const response = await fetch(
-        "http://localhost:8000/api/v1/users/logout",
-        {
-          method: "POST",
-          credentials: "include",
-        }
-      );
+      const response = await fetch(`${BASE_URL}/users/logout`, {
+        method: "POST",
+        credentials: "include",
+      });
       const data = await response.json();
       logout();
       console.log(data);

@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { cn } from "@/lib/utils";
+import { BASE_URL } from "@/lib/api";
 import { registerSchema } from "@/lib/schemas";
 import { useAuthStore } from "@/hooks/useAuth";
 import type { RegisterSchema } from "@/lib/schemas";
@@ -39,24 +40,25 @@ const Register = () => {
 
   const onSubmit = async (values: RegisterSchema) => {
     try {
-      const response = await fetch(
-        "http://localhost:8000/api/v1/users/register",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-          body: JSON.stringify(values),
-        }
-      );
+      const response = await fetch(`${BASE_URL}/users/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(values),
+      });
+
       const data = await response.json();
+      if (!response.ok) {
+        toast(data.message || "Login failed");
+        return;
+      }
+
       login(data.data);
       toast(data.message);
       form.reset();
       navigate("/");
     } catch (error) {
-      console.log("Registration error:", error);
+      toast("Registration error:" + error);
     }
   };
 

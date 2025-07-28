@@ -3,16 +3,18 @@ import { createRoot } from "react-dom/client";
 import { Toaster } from "sonner";
 import { lazy, StrictMode, Suspense } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import App from "./App.tsx";
 import Home from "@/pages/Home.tsx";
 import Login from "@/pages/Login.tsx";
 import Register from "@/pages/Register.tsx";
 import NotFound from "@/pages/NotFound.tsx";
+import { Spinner } from "@/components/Spinner.tsx";
 import { PublicRoutes } from "@/components/PublicRoutes.tsx";
 import { ProtectedRoutes } from "@/components/ProtectedRoutes.tsx";
 import { AuthInitializer } from "@/components/AuthInitialize.tsx";
-import { Spinner } from "@/components/Spinner.tsx";
 
 const Chat = lazy(() => import("@/pages/Chat.tsx"));
 const Settings = lazy(() => import("@/pages/Settings.tsx"));
@@ -35,33 +37,41 @@ const router = createBrowserRouter([
       {
         path: "/chat/:id",
         element: (
-          <ProtectedRoutes>
-            <Chat />
-          </ProtectedRoutes>
+          <Suspense fallback={<Spinner />}>
+            <ProtectedRoutes>
+              <Chat />
+            </ProtectedRoutes>
+          </Suspense>
         ),
       },
       {
         path: "/chat/group",
         element: (
-          <ProtectedRoutes>
-            <ChatGroup />
-          </ProtectedRoutes>
+          <Suspense fallback={<Spinner />}>
+            <ProtectedRoutes>
+              <ChatGroup />
+            </ProtectedRoutes>
+          </Suspense>
         ),
       },
       {
         path: "/settings",
         element: (
-          <ProtectedRoutes>
-            <Settings />
-          </ProtectedRoutes>
+          <Suspense fallback={<Settings />}>
+            <ProtectedRoutes>
+              <Settings />
+            </ProtectedRoutes>
+          </Suspense>
         ),
       },
       {
         path: "/add",
         element: (
-          <ProtectedRoutes>
-            <FriendRequest />
-          </ProtectedRoutes>
+          <Suspense fallback={<Spinner />}>
+            <ProtectedRoutes>
+              <FriendRequest />
+            </ProtectedRoutes>
+          </Suspense>
         ),
       },
     ],
@@ -85,13 +95,16 @@ const router = createBrowserRouter([
   { path: "*", element: <NotFound /> },
 ]);
 
+const queryClient = new QueryClient();
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <Suspense fallback={<Spinner />}>
+    <QueryClientProvider client={queryClient}>
       <AuthInitializer>
         <RouterProvider router={router} />
       </AuthInitializer>
       <Toaster position="top-right" />
-    </Suspense>
+      <ReactQueryDevtools />
+    </QueryClientProvider>
   </StrictMode>
 );
