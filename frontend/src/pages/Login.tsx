@@ -1,7 +1,8 @@
-import { Link } from "react-router";
 import { useForm } from "react-hook-form";
+import { Link, useNavigate } from "react-router";
 import { zodResolver } from "@hookform/resolvers/zod";
 
+import { cn } from "@/lib/utils";
 import { loginSchema } from "@/lib/schemas";
 import { useAuthStore } from "@/hooks/useAuth";
 import type { LoginSchema } from "@/lib/schemas";
@@ -27,8 +28,8 @@ import {
 } from "@/components/ui/form";
 
 const Login = () => {
+  const navigate = useNavigate();
   const { login } = useAuthStore();
-
   const form = useForm<LoginSchema>({
     resolver: zodResolver(loginSchema),
     defaultValues: { email: "", password: "" },
@@ -46,6 +47,8 @@ const Login = () => {
       });
       const data = await response.json();
       login(data.data);
+      form.reset();
+      navigate("/");
     } catch (error) {
       console.log("Login error:", error);
     }
@@ -92,10 +95,15 @@ const Login = () => {
               />
               <Button
                 type="submit"
-                className="w-full cursor-pointer"
                 variant="default"
+                className={cn(
+                  "w-full",
+                  form.formState.isSubmitting
+                    ? "cursor-not-allowed"
+                    : "cursor-pointer"
+                )}
               >
-                Sign Up
+                {form.formState.isSubmitting ? "LOADING..." : "Login"}
               </Button>
             </form>
           </Form>

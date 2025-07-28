@@ -1,7 +1,8 @@
-import { Link } from "react-router";
 import { useForm } from "react-hook-form";
+import { Link, useNavigate } from "react-router";
 import { zodResolver } from "@hookform/resolvers/zod";
 
+import { cn } from "@/lib/utils";
 import { registerSchema } from "@/lib/schemas";
 import { useAuthStore } from "@/hooks/useAuth";
 import type { RegisterSchema } from "@/lib/schemas";
@@ -27,6 +28,7 @@ import {
 } from "@/components/ui/form";
 
 const Register = () => {
+  const navigate = useNavigate();
   const { login } = useAuthStore();
 
   const form = useForm<RegisterSchema>({
@@ -49,6 +51,8 @@ const Register = () => {
       );
       const data = await response.json();
       login(data.data);
+      form.reset();
+      navigate("/");
     } catch (error) {
       console.log("Registration error:", error);
     }
@@ -114,10 +118,15 @@ const Register = () => {
               />
               <Button
                 type="submit"
-                className="w-full cursor-pointer"
                 variant="default"
+                className={cn(
+                  "w-full",
+                  form.formState.isSubmitting
+                    ? "cursor-not-allowed"
+                    : "cursor-pointer"
+                )}
               >
-                Sign Up
+                {form.formState.isSubmitting ? "LOADING..." : "Sign Up"}
               </Button>
             </form>
           </Form>
