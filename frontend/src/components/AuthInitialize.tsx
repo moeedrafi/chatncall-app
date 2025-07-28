@@ -1,5 +1,6 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAuthStore } from "@/hooks/useAuth";
+import { Spinner } from "@/components/Spinner";
 
 export const AuthInitializer = ({
   children,
@@ -7,9 +8,11 @@ export const AuthInitializer = ({
   children: React.ReactNode;
 }) => {
   const { login, logout } = useAuthStore();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
     const checkAuth = async () => {
+      setIsLoading(true);
       try {
         const res = await fetch(
           "http://localhost:8000/api/v1/users/check-auth",
@@ -25,11 +28,15 @@ export const AuthInitializer = ({
         }
       } catch {
         logout();
+      } finally {
+        setIsLoading(false);
       }
     };
 
     checkAuth();
   }, [login, logout]);
+
+  if (isLoading) return <Spinner />;
 
   return <>{children}</>;
 };

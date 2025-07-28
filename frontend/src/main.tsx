@@ -12,6 +12,7 @@ import NotFound from "@/pages/NotFound.tsx";
 import { PublicRoutes } from "@/components/PublicRoutes.tsx";
 import { ProtectedRoutes } from "@/components/ProtectedRoutes.tsx";
 import { AuthInitializer } from "@/components/AuthInitialize.tsx";
+import { Spinner } from "@/components/Spinner.tsx";
 
 const Chat = lazy(() => import("@/pages/Chat.tsx"));
 const Settings = lazy(() => import("@/pages/Settings.tsx"));
@@ -86,7 +87,7 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <Suspense fallback={<div className="text-center p-4">Loading...</div>}>
+    <Suspense fallback={<Spinner />}>
       <AuthInitializer>
         <RouterProvider router={router} />
       </AuthInitializer>
