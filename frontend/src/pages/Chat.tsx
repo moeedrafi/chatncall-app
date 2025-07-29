@@ -215,7 +215,7 @@ const Chat = () => {
           </div>
         </div>
 
-        <MessageInput />
+        <MessageInput conversationId={id as string} />
       </div>
     </section>
   );

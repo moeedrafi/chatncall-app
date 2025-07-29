@@ -12,3 +12,8 @@ export const loginSchema = z.object({
   password: z.string().min(6),
 });
 export type LoginSchema = z.infer<typeof loginSchema>;
+
+export const chatSchema = z.object({
+  message: z.string().min(1),
+});
+export type ChatSchema = z.infer<typeof chatSchema>;
