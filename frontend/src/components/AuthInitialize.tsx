@@ -8,7 +8,7 @@ export const AuthInitializer = ({
   children: React.ReactNode;
 }) => {
   const { login, logout } = useAuthStore();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const checkAuth = async () => {
