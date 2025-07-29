@@ -1,38 +1,48 @@
-import { useEffect, useState } from "react";
 import { Menu, Search } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import { Link, Outlet, useMatch } from "react-router";
 
 import { cn } from "@/lib/utils";
+import { getAPI } from "@/lib/api";
 import { useRoutes } from "@/hooks/useRoutes";
-import { getAPI } from "./lib/api";
 
 type Conversation = {
   _id: string;
+  isGroup: boolean;
   users: {
     _id: string;
     username: string;
     avatar: string;
+    lastMessageAt: Date;
   }[];
+};
+
+const getConversations = async () => {
+  try {
+    const data = await getAPI("/conversations/");
+    return data.data;
+  } catch (error) {
+    console.log("Fetching Conversation serror:", error);
+  }
+};
+
+const useConversations = () => {
+  return useQuery({
+    queryKey: ["conversations"],
+    queryFn: getConversations,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
 };
 
 const App = () => {
   const routes = useRoutes();
   const isChatRoute = useMatch("/chat/:id");
   const isSettingsRoute = useMatch("/settings");
-  const [conversations, setConversations] = useState<Conversation[]>([]);
 
-  useEffect(() => {
-    const getConversations = async () => {
-      try {
-        const data = await getAPI("/conversations/");
-        setConversations(data.data);
-      } catch (error) {
-        console.log("Fetching Conversation serror:", error);
-      }
-    };
+  const { data, status } = useConversations();
 
-    getConversations();
-  }, []);
+  if (status === "pending") return <div>Pending...</div>;
+  if (status === "error") return <p>error fetching conversation</p>;
 
   return (
     <main className="h-dvh flex flex-col sm:flex-row overflow-hidden">
@@ -96,8 +106,8 @@ const App = () => {
 
         {/* LIST OF CHATS */}
         <div className="flex flex-col divide-y divide-gray-800">
-          {conversations &&
-            conversations.map((conversation, index) => (
+          {data &&
+            data.map((conversation: Conversation, index: number) => (
               <Link
                 key={index}
                 to={`/chat/${conversation._id}`}
@@ -122,10 +132,10 @@ const App = () => {
                   </div>
                 </div>
                 {/* {friend.message > 0 && (
-                <span className="text-sm font-semibold text-slate-100 bg-green-500 rounded-full w-6 h-6 flex items-center justify-center">
-                  {friend.message}
-                </span>
-              )} */}
+                  <span className="text-sm font-semibold text-slate-100 bg-green-500 rounded-full w-6 h-6 flex items-center justify-center">
+                    {friend.message}
+                  </span>
+                )} */}
               </Link>
             ))}
         </div>

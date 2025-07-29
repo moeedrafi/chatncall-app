@@ -1,6 +1,9 @@
+import { useState } from "react";
 import { Search } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+
+import { BASE_URL, getAPI } from "@/lib/api";
 import { Button } from "@/components/ui/button";
-import { useEffect, useState } from "react";
 
 let timeoutId: NodeJS.Timeout;
 
@@ -15,9 +18,25 @@ type Request = {
   sender: { _id: string; username: string };
 };
 
+const getPendingRequests = async () => {
+  try {
+    const data = await getAPI("/friends/requests");
+    return data.data;
+  } catch (error) {
+    console.log("Pending Request error:", error);
+  }
+};
+
+const useRequests = () => {
+  return useQuery({
+    queryKey: ["requests"],
+    queryFn: getPendingRequests,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+};
+
 const FriendRequest = () => {
   const [searchedUsers, setSearchedUsers] = useState<User[]>([]);
-  const [pendingRequest, setPendingRequest] = useState<Request[]>([]);
 
   const handleSearch = async (e: React.ChangeEvent<HTMLInputElement>) => {
     clearTimeout(timeoutId);
@@ -25,7 +44,7 @@ const FriendRequest = () => {
     timeoutId = setTimeout(async () => {
       try {
         const response = await fetch(
-          `http://localhost:8000/api/v1/users/search-users?username=${e.target.value.trim()}`,
+          `${BASE_URL}/users/search-users?username=${e.target.value.trim()}`,
           {
             method: "GET",
             credentials: "include",
@@ -41,13 +60,10 @@ const FriendRequest = () => {
 
   const add = async (id: string) => {
     try {
-      const response = await fetch(
-        `http://localhost:8000/api/v1/friends/${id}/add`,
-        {
-          method: "POST",
-          credentials: "include",
-        }
-      );
+      const response = await fetch(`${BASE_URL}/friends/${id}/add`, {
+        method: "POST",
+        credentials: "include",
+      });
       const data = await response.json();
       console.log(data);
     } catch (error) {
@@ -57,13 +73,10 @@ const FriendRequest = () => {
 
   const accept = async (id: string) => {
     try {
-      const response = await fetch(
-        `http://localhost:8000/api/v1/friends/${id}/accept`,
-        {
-          method: "POST",
-          credentials: "include",
-        }
-      );
+      const response = await fetch(`${BASE_URL}/friends/${id}/accept`, {
+        method: "POST",
+        credentials: "include",
+      });
       const data = await response.json();
       console.log(data);
     } catch (error) {
@@ -71,25 +84,10 @@ const FriendRequest = () => {
     }
   };
 
-  useEffect(() => {
-    const pendingRequests = async () => {
-      try {
-        const response = await fetch(
-          `http://localhost:8000/api/v1/friends/requests`,
-          {
-            method: "GET",
-            credentials: "include",
-          }
-        );
-        const data = await response.json();
-        setPendingRequest(data.data);
-      } catch (error) {
-        console.log("Pending Request error:", error);
-      }
-    };
+  const { data, status } = useRequests();
 
-    pendingRequests();
-  }, []);
+  if (status === "pending") return <div>Pending...</div>;
+  if (status === "error") return <p>error fetching conversation</p>;
 
   return (
     <section className="hidden w-full order-3 md:block mx-5">
@@ -108,7 +106,7 @@ const FriendRequest = () => {
       <div>
         <h3 className="font-semibold">Pending Requests</h3>
         <div className="flex items-center gap-3 flex-wrap">
-          {pendingRequest.map((request) => (
+          {data.map((request: Request) => (
             <div
               key={request._id}
               className="my-5 bg-white p-4 border border-gray-200 rounded-xl shadow-md flex items-center justify-between w-full max-w-md"
