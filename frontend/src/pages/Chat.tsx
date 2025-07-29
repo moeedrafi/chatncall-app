@@ -1,6 +1,9 @@
-import React, { useEffect, useState } from "react";
+import { Fragment } from "react";
 import { useParams } from "react-router";
+import { useQuery } from "@tanstack/react-query";
 
+import { getAPI } from "@/lib/api";
+import { useAuthStore } from "@/hooks/useAuth";
 import { ChatNavbar } from "@/components/ChatNavbar";
 import { MessageInput } from "@/components/MessageInput";
 import { MessageDropdown } from "@/components/MessageDropdown";
@@ -103,50 +106,58 @@ const initialMessages = [
   },
 ];
 
-type Users = {
-  users: { _id: string; username: string; avatar: string }[];
+type User = {
+  _id: string;
+  username: string;
+  avatar: string;
+};
+
+const getConversation = async (id: string) => {
+  try {
+    const data = await getAPI(`/conversations/${id}`);
+    return data.data;
+  } catch (error) {
+    console.log("Friend Convo error:", error);
+  }
+};
+
+const useConversation = (id: string) => {
+  return useQuery({
+    queryKey: ["chat", { id }],
+    queryFn: () => getConversation(id),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
 };
 
 const Chat = () => {
   const { id } = useParams();
+  const { user } = useAuthStore();
+  const { data, status } = useConversation(id as string);
 
-  const [messages, setMessages] = useState();
-  const [users, setUsers] = useState<Users>();
+  if (status === "pending") return <div>Pending...</div>;
+  if (status === "error") return <p>error fetching conversation</p>;
 
-  useEffect(() => {
-    const getConversation = async () => {
-      try {
-        const response = await fetch(
-          `http://localhost:8000/api/v1/conversations/${id}`,
-          {
-            method: "GET",
-            credentials: "include",
-          }
-        );
-        const data = await response.json();
-        setUsers(data.data);
-      } catch (error) {
-        console.log("Friend Convo error:", error);
-      }
-    };
-
-    getConversation();
-  }, [id]);
+  const otherUser: User = data.users.find(
+    (friend: User) => friend._id !== user?._id
+  );
 
   return (
     <section className="bg-gray-50 h-full w-full order-3">
       <div className="h-full flex flex-col justify-between">
         <ChatNavbar
           isGroup={false}
-          name="John"
-          image="https://plus.unsplash.com/premium_photo-1749846961895-464c17182d86?q=80&w=876&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+          name={otherUser.username}
+          image={
+            otherUser.avatar ||
+            "https://plus.unsplash.com/premium_photo-1749846961895-464c17182d86?q=80&w=876&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+          }
         />
 
         {/* CHAT */}
         <div className="flex-1 overflow-y-auto">
           <div className="flex flex-col gap-2 p-2 sm:p-4">
             {initialMessages.map((message) => (
-              <React.Fragment key={message.id}>
+              <Fragment key={message.id}>
                 {message.isOwn ? (
                   <div className="self-end flex gap-2 group">
                     <MessageDropdown />
@@ -199,7 +210,7 @@ const Chat = () => {
                     </div>
                   </div>
                 )}
-              </React.Fragment>
+              </Fragment>
             ))}
           </div>
         </div>
