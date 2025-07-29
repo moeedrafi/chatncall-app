@@ -1,16 +1,19 @@
-import { getAPI } from "@/lib/api";
-import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router";
+import { useQuery } from "@tanstack/react-query";
+
+import { getAPI } from "@/lib/api";
+import { useAuthStore } from "@/hooks/useAuth";
 
 type Conversation = {
   _id: string;
   isGroup: boolean;
-  users: {
-    _id: string;
-    username: string;
-    avatar: string;
-    lastMessageAt: Date;
-  }[];
+  users: User[];
+};
+
+type User = {
+  _id: string;
+  username: string;
+  avatar: string;
 };
 
 const getConversations = async () => {
@@ -31,6 +34,7 @@ const useConversations = () => {
 };
 
 export const ChatList = () => {
+  const { user } = useAuthStore();
   const { data, status } = useConversations();
 
   if (status === "pending") return <div>Pending...</div>;
@@ -38,8 +42,12 @@ export const ChatList = () => {
 
   return (
     <div className="flex flex-col divide-y divide-gray-800">
-      {data &&
-        data.map((conversation: Conversation, index: number) => (
+      {data.map((conversation: Conversation, index: number) => {
+        const otherUser = conversation.users.find(
+          (friend) => friend._id !== user?._id
+        );
+
+        return (
           <Link
             key={index}
             to={`/chat/${conversation._id}`}
@@ -48,8 +56,8 @@ export const ChatList = () => {
             <div className="flex items-center gap-3">
               <div className="relative">
                 <img
-                  src={conversation.users[0].avatar || "/noAvatar.png"}
-                  alt={`${conversation.users[0].username} profile picture`}
+                  src={otherUser?.avatar || "/noAvatar.png"}
+                  alt={`${otherUser?.username} profile picture`}
                   width={14}
                   height={14}
                   className="w-14 h-14 rounded-full object-cover"
@@ -58,7 +66,7 @@ export const ChatList = () => {
               </div>
               <div>
                 <h2 className="text-lg text-slate-100 font-medium">
-                  {conversation.users[0].username}
+                  {otherUser?.username}
                 </h2>
                 {/* <p className="text-sm text-slate-400">{friend.description}</p> */}
               </div>
@@ -69,7 +77,8 @@ export const ChatList = () => {
                   </span>
                 )} */}
           </Link>
-        ))}
+        );
+      })}
     </div>
   );
 };
