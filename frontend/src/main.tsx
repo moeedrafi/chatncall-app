@@ -57,7 +57,7 @@ const router = createBrowserRouter([
       {
         path: "/settings",
         element: (
-          <Suspense fallback={<Settings />}>
+          <Suspense fallback={<Spinner />}>
             <ProtectedRoutes>
               <Settings />
             </ProtectedRoutes>

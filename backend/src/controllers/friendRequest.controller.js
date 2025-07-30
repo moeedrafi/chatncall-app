@@ -151,6 +151,30 @@ const searchUsersToAdd = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, users, "Search successful!"));
 });
 
+const searchUsersForGroup = asyncHandler(async (req, res) => {
+  const { searchQuery } = req.body;
+
+  const friendRequests = await FriendRequest.find({
+    status: "accepted",
+    $or: [{ sender: req.user._id }, { receiver: req.user._id }],
+  });
+
+  const friendIds = friendRequests.map((fr) => {
+    return fr.sender.toString() === req.user._id.toString()
+      ? fr.receiver
+      : fr.sender;
+  });
+
+  const friends = await User.find({
+    _id: { $in: friendIds },
+    username: { $regex: searchQuery, $options: "i" },
+  }).select("-password -refreshToken");
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, friends, "Search successful!"));
+});
+
 export {
   getRequests,
   sendRequest,
@@ -158,4 +182,5 @@ export {
   rejectRequest,
   getFriendsList,
   searchUsersToAdd,
+  searchUsersForGroup,
 };

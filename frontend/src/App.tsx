@@ -1,14 +1,17 @@
-import { Menu } from "lucide-react";
+import { useState } from "react";
+import { UsersRound } from "lucide-react";
 import { Outlet, useMatch } from "react-router";
 
 import { cn } from "@/lib/utils";
 import { Search } from "@/components/Search";
 import { NavLinks } from "@/components/NavLinks";
 import { ChatList } from "@/components/ChatList";
+import CreateGroupModal from "./components/CreateGroupModal";
 
 const App = () => {
   const isChatRoute = useMatch("/chat/:id");
   const isSettingsRoute = useMatch("/settings");
+  const [isOpen, setIsOpen] = useState<boolean>(false);
 
   return (
     <main className="h-dvh flex flex-col sm:flex-row overflow-hidden">
@@ -24,12 +27,18 @@ const App = () => {
       >
         <div className="flex items-center justify-between text-slate-100">
           <div className="text-2xl font-bold">ChatnCall</div>
-          <Menu size={30} />
+          <UsersRound
+            size={24}
+            className="cursor-pointer"
+            onClick={() => setIsOpen(true)}
+          />
         </div>
 
         <Search />
         <ChatList />
       </section>
+
+      {isOpen && <CreateGroupModal isOpen={isOpen} setIsOpen={setIsOpen} />}
 
       <Outlet />
     </main>
