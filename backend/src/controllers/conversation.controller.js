@@ -94,9 +94,11 @@ const deleteConversation = asyncHandler(async (req, res) => {
 });
 
 const createGroupConversation = asyncHandler(async (req, res) => {
-  const { name, users } = req.body;
+  const { groupName, members } = req.body;
+  const users = members.map((member) => member.toString());
+
   const allUsers = [...new Set([...users, req.user._id.toString()])];
-  if (!name || allUsers.length < 3) {
+  if (!groupName || allUsers.length < 3) {
     throw new ApiError(
       400,
       "Group must have a name and at least 3 members (including you)."
@@ -105,12 +107,12 @@ const createGroupConversation = asyncHandler(async (req, res) => {
 
   const newGroup = await Conversation.create({
     isGroup: true,
-    name,
-    users,
+    name: groupName,
+    users: allUsers,
   });
 
   const fullGroup = await Conversation.findById(newGroup._id)
-    .populate("users", "name avatar email")
+    .populate("users", "username avatar email")
     .lean();
 
   return res

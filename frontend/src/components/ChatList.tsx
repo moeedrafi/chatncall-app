@@ -6,6 +6,7 @@ import { useAuthStore } from "@/hooks/useAuth";
 
 type Conversation = {
   _id: string;
+  name: string;
   isGroup: boolean;
   users: User[];
 };
@@ -53,24 +54,47 @@ export const ChatList = () => {
             to={`/chat/${conversation._id}`}
             className="flex items-center justify-between gap-4 px-4 py-4 hover:bg-slate-700 rounded-lg"
           >
-            <div className="flex items-center gap-3">
-              <div className="relative">
-                <img
-                  src={otherUser?.avatar || "/noAvatar.png"}
-                  alt={`${otherUser?.username} profile picture`}
-                  width={14}
-                  height={14}
-                  className="w-14 h-14 rounded-full object-cover"
-                />
-                <div className="absolute top-2 right-0 w-2 h-2 bg-green-500 rounded-full" />
+            {conversation.isGroup ? (
+              <div className="flex items-center gap-3">
+                <div className="relative">
+                  <img
+                    src={otherUser?.avatar || "/noAvatar.png"}
+                    alt={`${otherUser?.username} profile picture`}
+                    width={14}
+                    height={14}
+                    className="w-14 h-14 rounded-full object-cover"
+                  />
+                  <div className="absolute top-2 right-0 w-2 h-2 bg-green-500 rounded-full" />
+                </div>
+                <div>
+                  <h2 className="text-lg text-slate-100 font-medium">
+                    {conversation.name}
+                  </h2>
+                  <p className="text-sm text-slate-400">
+                    {conversation.users.length - 1} Members
+                  </p>
+                </div>
               </div>
-              <div>
-                <h2 className="text-lg text-slate-100 font-medium">
-                  {otherUser?.username}
-                </h2>
-                {/* <p className="text-sm text-slate-400">{friend.description}</p> */}
+            ) : (
+              <div className="flex items-center gap-3">
+                <div className="relative">
+                  <img
+                    src={otherUser?.avatar || "/noAvatar.png"}
+                    alt={`${otherUser?.username} profile picture`}
+                    width={14}
+                    height={14}
+                    className="w-14 h-14 rounded-full object-cover"
+                  />
+                  <div className="absolute top-2 right-0 w-2 h-2 bg-green-500 rounded-full" />
+                </div>
+                <div>
+                  <h2 className="text-lg text-slate-100 font-medium">
+                    {otherUser?.username}
+                  </h2>
+                  {/* <p className="text-sm text-slate-400">{friend.description}</p> */}
+                </div>
               </div>
-            </div>
+            )}
             {/* {friend.message > 0 && (
                   <span className="text-sm font-semibold text-slate-100 bg-green-500 rounded-full w-6 h-6 flex items-center justify-center">
                     {friend.message}
