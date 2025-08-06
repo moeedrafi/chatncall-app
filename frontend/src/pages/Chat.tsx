@@ -171,10 +171,6 @@ const Chat = () => {
     (friend: User) => friend._id !== user?._id
   );
 
-  const isOwnMessage = messagesData.map(
-    (message: Message) => message.sender === user?._id
-  );
-
   return (
     <section className="bg-gray-50 h-full w-full order-3">
       <div className="h-full flex flex-col justify-between">
@@ -188,31 +184,34 @@ const Chat = () => {
         <div className="flex-1 overflow-y-auto">
           <div className="flex flex-col gap-2 p-2 sm:p-4">
             {messagesData.length > 0 ? (
-              messagesData.map((message: Message) => (
-                <Fragment key={message._id}>
-                  {isOwnMessage ? (
-                    <div className="self-end flex gap-2 group">
-                      <MessageDropdown />
+              messagesData.map((message: Message) => {
+                const isOwnMessage = message.sender === user?._id;
 
-                      <img
-                        src={user?.avatar || "/noAvatar.png"}
-                        width={32}
-                        height={32}
-                        className="order-1 w-8 h-8 rounded-full object-cover"
-                      />
+                return (
+                  <Fragment key={message._id}>
+                    {isOwnMessage ? (
+                      <div className="self-end flex gap-2 group">
+                        <MessageDropdown />
 
-                      {/* MESSAGE + SEEN */}
-                      <div className="flex flex-col">
-                        <div className="flex gap-2 p-3 bg-green-500 text-white shadow-sm rounded-lg">
-                          <p className="text-xs sm:text-sm max-w-[200px] sm:max-w-md w-max">
-                            {message.body}
-                          </p>
-                          <span className="self-end text-xs text-gray-300">
-                            2:33 PM
-                          </span>
-                        </div>
+                        <img
+                          src={user?.avatar || "/noAvatar.png"}
+                          width={32}
+                          height={32}
+                          className="order-1 w-8 h-8 rounded-full object-cover"
+                        />
 
-                        {/* {message.readBy && (
+                        {/* MESSAGE + SEEN */}
+                        <div className="flex flex-col">
+                          <div className="flex gap-2 p-3 bg-green-500 text-white shadow-sm rounded-lg">
+                            <p className="text-xs sm:text-sm max-w-[200px] sm:max-w-md w-max">
+                              {message.body}
+                            </p>
+                            <span className="self-end text-xs text-gray-300">
+                              2:33 PM
+                            </span>
+                          </div>
+
+                          {/* {message.readBy && (
                         <div className="self-end mt-1">
                           <img
                             src={message.readBy[0].avatar || "/placeholder.svg"}
@@ -221,29 +220,30 @@ const Chat = () => {
                           />
                         </div>
                       )} */}
+                        </div>
                       </div>
-                    </div>
-                  ) : (
-                    <div className="flex gap-2 group">
-                      <img
-                        src={otherUser.avatar || "/noAvatar.png"}
-                        width={32}
-                        height={32}
-                        className="w-8 h-8 rounded-full object-cover"
-                      />
+                    ) : (
+                      <div className="flex gap-2 group">
+                        <img
+                          src={otherUser.avatar || "/noAvatar.png"}
+                          width={32}
+                          height={32}
+                          className="w-8 h-8 rounded-full object-cover"
+                        />
 
-                      <div className="flex gap-2 p-3 border border-gray-300 shadow-sm rounded-lg">
-                        <p className="text-xs sm:text-sm max-w-[200px] sm:max-w-md w-max">
-                          {message.body}
-                        </p>
-                        <span className="self-end text-xs text-gray-300">
-                          2:33 PM
-                        </span>
+                        <div className="flex gap-2 p-3 border border-gray-300 shadow-sm rounded-lg">
+                          <p className="text-xs sm:text-sm max-w-[200px] sm:max-w-md w-max">
+                            {message.body}
+                          </p>
+                          <span className="self-end text-xs text-gray-300">
+                            2:33 PM
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                  )}
-                </Fragment>
-              ))
+                    )}
+                  </Fragment>
+                );
+              })
             ) : (
               <h3 className="flex items-center justify-center text-3xl font-bold">
                 Start a conversation
