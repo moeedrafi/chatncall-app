@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 
 import { getAPI } from "@/lib/api";
 import { useAuthStore } from "@/hooks/useAuth";
+import { Spinner } from "@/components/Spinner";
 
 type Conversation = {
   _id: string;
@@ -38,8 +39,14 @@ export const ChatList = () => {
   const { user } = useAuthStore();
   const { data, status } = useConversations();
 
-  if (status === "pending") return <div>Pending...</div>;
-  if (status === "error") return <p>error fetching conversation</p>;
+  if (status === "pending") return <Spinner />;
+
+  if (status === "error")
+    return (
+      <p className="text-center text-red-500 font-medium">
+        Failed to load conversations.
+      </p>
+    );
 
   return (
     <div className="flex flex-col divide-y divide-gray-800">

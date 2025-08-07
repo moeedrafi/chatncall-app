@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { Search } from "@/components/Search";
 import { NavLinks } from "@/components/NavLinks";
 import { ChatList } from "@/components/ChatList";
-import CreateGroupModal from "./components/CreateGroupModal";
+import { CreateGroupModal } from "@/components/CreateGroupModal";
 
 const App = () => {
   const isChatRoute = useMatch("/chat/:id");

@@ -11,7 +11,7 @@ import Home from "@/pages/Home.tsx";
 import Login from "@/pages/Login.tsx";
 import Register from "@/pages/Register.tsx";
 import NotFound from "@/pages/NotFound.tsx";
-import { Spinner } from "@/components/Spinner.tsx";
+import { FullPageLoader } from "@/components/FullPageLoader";
 import { PublicRoutes } from "@/components/PublicRoutes.tsx";
 import { ProtectedRoutes } from "@/components/ProtectedRoutes.tsx";
 import { AuthInitializer } from "@/components/AuthInitialize.tsx";
@@ -37,7 +37,7 @@ const router = createBrowserRouter([
       {
         path: "/chat/:id",
         element: (
-          <Suspense fallback={<Spinner />}>
+          <Suspense fallback={<FullPageLoader />}>
             <ProtectedRoutes>
               <Chat />
             </ProtectedRoutes>
@@ -47,7 +47,7 @@ const router = createBrowserRouter([
       {
         path: "/chat/group",
         element: (
-          <Suspense fallback={<Spinner />}>
+          <Suspense fallback={<FullPageLoader />}>
             <ProtectedRoutes>
               <ChatGroup />
             </ProtectedRoutes>
@@ -57,7 +57,7 @@ const router = createBrowserRouter([
       {
         path: "/settings",
         element: (
-          <Suspense fallback={<Spinner />}>
+          <Suspense fallback={<FullPageLoader />}>
             <ProtectedRoutes>
               <Settings />
             </ProtectedRoutes>
@@ -67,7 +67,7 @@ const router = createBrowserRouter([
       {
         path: "/add",
         element: (
-          <Suspense fallback={<Spinner />}>
+          <Suspense fallback={<FullPageLoader />}>
             <ProtectedRoutes>
               <FriendRequest />
             </ProtectedRoutes>

@@ -41,7 +41,10 @@ const formSchema = z.object({
   members: z.array(z.any()).min(3, "At least 3 members are required"),
 });
 
-const CreateGroupModal = ({ isOpen, setIsOpen }: CreateGroupModalProps) => {
+export const CreateGroupModal = ({
+  isOpen,
+  setIsOpen,
+}: CreateGroupModalProps) => {
   const searchRef = useRef<HTMLDivElement>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [showDropdown, setShowDropdown] = useState<boolean>(false);
@@ -269,5 +272,3 @@ const CreateGroupModal = ({ isOpen, setIsOpen }: CreateGroupModalProps) => {
     </Dialog>
   );
 };
-
-export default CreateGroupModal;

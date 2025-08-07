@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuthStore } from "@/hooks/useAuth";
-import { Spinner } from "@/components/Spinner";
+import { FullPageLoader } from "@/components/FullPageLoader";
 
 export const AuthInitializer = ({
   children,
@@ -36,7 +36,7 @@ export const AuthInitializer = ({
     checkAuth();
   }, [login, logout]);
 
-  if (isLoading) return <Spinner />;
+  if (isLoading) return <FullPageLoader />;
 
   return <>{children}</>;
 };

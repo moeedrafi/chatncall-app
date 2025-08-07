@@ -7,6 +7,7 @@ import { useAuthStore } from "@/hooks/useAuth";
 import { ChatNavbar } from "@/components/ChatNavbar";
 import { MessageInput } from "@/components/MessageInput";
 import { MessageDropdown } from "@/components/MessageDropdown";
+import { Spinner } from "@/components/Spinner";
 
 // const friend = {
 //   id: "ash-ketchum",
@@ -161,11 +162,21 @@ const Chat = () => {
     id as string
   );
 
-  if (status === "pending") return <div>Pending...</div>;
-  if (status === "error") return <p>error fetching conversation</p>;
+  if (status === "pending") return <Spinner />;
+  if (status === "error")
+    return (
+      <p className="text-center text-red-500 font-medium">
+        eFrror fetching conversation
+      </p>
+    );
 
-  if (messageStatus === "pending") return <div>Pending...</div>;
-  if (messageStatus === "error") return <p>error fetching conversation</p>;
+  if (messageStatus === "pending") return <Spinner />;
+  if (messageStatus === "error")
+    return (
+      <p className="text-center text-red-500 font-medium">
+        eFrror fetching conversation
+      </p>
+    );
 
   const otherUser: User = data.users.find(
     (friend: User) => friend._id !== user?._id

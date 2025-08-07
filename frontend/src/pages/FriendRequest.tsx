@@ -3,6 +3,7 @@ import { Search } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 
 import { BASE_URL, getAPI } from "@/lib/api";
+import { Spinner } from "@/components/Spinner";
 import { Button } from "@/components/ui/button";
 
 let timeoutId: NodeJS.Timeout;
@@ -86,8 +87,13 @@ const FriendRequest = () => {
 
   const { data, status } = useRequests();
 
-  if (status === "pending") return <div>Pending...</div>;
-  if (status === "error") return <p>error fetching conversation</p>;
+  if (status === "pending") return <Spinner />;
+  if (status === "error")
+    return (
+      <p className="text-center text-red-500 font-medium">
+        error fetching conversation
+      </p>
+    );
 
   return (
     <section className="hidden w-full order-3 md:block mx-5">
