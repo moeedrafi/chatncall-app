@@ -2,12 +2,12 @@ import { Fragment } from "react";
 import { useParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 
+import { cn } from "@/lib/utils";
 import { getAPI } from "@/lib/api";
 import { useAuthStore } from "@/hooks/useAuth";
 import { ChatNavbar } from "@/components/ChatNavbar";
 import { MessageInput } from "@/components/MessageInput";
 import { MessageDropdown } from "@/components/MessageDropdown";
-import { Spinner } from "@/components/Spinner";
 
 // const friend = {
 //   id: "ash-ketchum",
@@ -162,111 +162,148 @@ const Chat = () => {
     id as string
   );
 
-  if (status === "pending") return <Spinner />;
-  if (status === "error")
+  if (status === "error") {
     return (
       <p className="text-center text-red-500 font-medium">
         eFrror fetching conversation
       </p>
     );
+  }
 
-  if (messageStatus === "pending") return <Spinner />;
-  if (messageStatus === "error")
+  if (messageStatus === "error") {
     return (
       <p className="text-center text-red-500 font-medium">
         eFrror fetching conversation
       </p>
     );
+  }
 
-  const otherUser: User = data.users.find(
+  const otherUser: User = data?.users.find(
     (friend: User) => friend._id !== user?._id
   );
 
   return (
     <section className="bg-gray-50 h-full w-full order-3">
       <div className="h-full flex flex-col justify-between">
-        <ChatNavbar
-          isGroup={false}
-          name={otherUser.username}
-          image={otherUser.avatar || "/noAvatar.png"}
-        />
-
-        {/* CHAT */}
-        <div className="flex-1 overflow-y-auto">
-          <div className="flex flex-col gap-2 p-2 sm:p-4">
-            {messagesData.length > 0 ? (
-              messagesData.map((message: Message) => {
-                const isOwnMessage = message.sender === user?._id;
-
-                return (
-                  <Fragment key={message._id}>
-                    {isOwnMessage ? (
-                      <div className="self-end flex gap-2 group">
-                        <MessageDropdown />
-
-                        <img
-                          src={user?.avatar || "/noAvatar.png"}
-                          width={32}
-                          height={32}
-                          className="order-1 w-8 h-8 rounded-full object-cover"
-                        />
-
-                        {/* MESSAGE + SEEN */}
-                        <div className="flex flex-col">
-                          <div className="flex gap-2 p-3 bg-green-500 text-white shadow-sm rounded-lg">
-                            <p className="text-xs sm:text-sm max-w-[200px] sm:max-w-md w-max">
-                              {message.body}
-                            </p>
-                            <span className="self-end text-xs text-gray-300">
-                              2:33 PM
-                            </span>
-                          </div>
-
-                          {/* {message.readBy && (
-                        <div className="self-end mt-1">
-                          <img
-                            src={message.readBy[0].avatar || "/placeholder.svg"}
-                            alt={`Read by`}
-                            className="w-3 h-3 rounded-full object-cover"
-                          />
-                        </div>
-                      )} */}
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="flex gap-2 group">
-                        <img
-                          src={otherUser.avatar || "/noAvatar.png"}
-                          width={32}
-                          height={32}
-                          className="w-8 h-8 rounded-full object-cover"
-                        />
-
-                        <div className="flex gap-2 p-3 border border-gray-300 shadow-sm rounded-lg">
-                          <p className="text-xs sm:text-sm max-w-[200px] sm:max-w-md w-max">
-                            {message.body}
-                          </p>
-                          <span className="self-end text-xs text-gray-300">
-                            2:33 PM
-                          </span>
-                        </div>
-                      </div>
-                    )}
-                  </Fragment>
-                );
-              })
-            ) : (
-              <h3 className="flex items-center justify-center text-3xl font-bold">
-                Start a conversation
-              </h3>
-            )}
+        {status === "pending" ? (
+          <div className="h-16 px-4 py-3 flex items-center border-b">
+            <div className="w-10 h-10 rounded-full bg-gray-300 animate-pulse" />
+            <div className="ml-4 h-4 w-1/3 bg-gray-300 animate-pulse rounded" />
           </div>
-        </div>
+        ) : (
+          <>
+            <ChatNavbar
+              isGroup={false}
+              name={otherUser.username}
+              image={otherUser.avatar || "/noAvatar.png"}
+            />
 
-        <MessageInput conversationId={id as string} />
+            {/* CHAT */}
+            <div className="flex-1 overflow-y-auto">
+              <div className="flex flex-col gap-2 p-2 sm:p-4">
+                {messageStatus === "pending" ? (
+                  <>
+                    <MessageSkeleton />
+                    <MessageSkeleton isOwnMessage />
+                  </>
+                ) : messagesData.length > 0 ? (
+                  messagesData.map((message: Message) => {
+                    const isOwnMessage = message.sender === user?._id;
+
+                    return (
+                      <Fragment key={message._id}>
+                        <div
+                          className={cn(
+                            "flex gap-2 group",
+                            isOwnMessage && "self-end"
+                          )}
+                        >
+                          {isOwnMessage && <MessageDropdown />}
+
+                          <img
+                            src={
+                              isOwnMessage
+                                ? user?.avatar || "/noAvatar.png"
+                                : otherUser.avatar || "/noAvatar.png"
+                            }
+                            width={32}
+                            height={32}
+                            className={cn(
+                              "w-8 h-8 rounded-full object-cover",
+                              isOwnMessage && "order-1"
+                            )}
+                          />
+
+                          {/* MESSAGE + SEEN */}
+
+                          <div className="flex flex-col">
+                            <div
+                              className={cn(
+                                "flex gap-2 p-3 shadow-sm rounded-lg",
+                                isOwnMessage
+                                  ? "bg-green-500 text-white"
+                                  : "border border-gray-300"
+                              )}
+                            >
+                              <p className="text-xs sm:text-sm max-w-[200px] sm:max-w-md w-max">
+                                {message.body}
+                              </p>
+                              <span className="self-end text-xs text-gray-300">
+                                2:33 PM
+                              </span>
+                            </div>
+
+                            {/* {isOwnMessage && message.readBy && (
+                            <div className="self-end mt-1">
+                              <img
+                                src={
+                                  message.readBy[0].avatar || "/placeholder.svg"
+                                }
+                                alt={`Read by`}
+                                className="w-3 h-3 rounded-full object-cover"
+                              />
+                            </div>
+                          )} */}
+                          </div>
+                        </div>
+                      </Fragment>
+                    );
+                  })
+                ) : (
+                  <h3 className="flex items-center justify-center text-3xl font-bold">
+                    Start a conversation
+                  </h3>
+                )}
+              </div>
+            </div>
+
+            <MessageInput conversationId={id as string} />
+          </>
+        )}
       </div>
     </section>
   );
 };
 
 export default Chat;
+
+const MessageSkeleton = ({ isOwnMessage = false }) => (
+  <div className={isOwnMessage ? "self-end flex gap-2" : "flex gap-2"}>
+    {!isOwnMessage && (
+      <div className="w-8 h-8 bg-gray-300 rounded-full animate-pulse" />
+    )}
+
+    <div className="flex flex-col gap-1">
+      <div
+        className={`${
+          isOwnMessage ? "bg-green-300" : "bg-gray-300"
+        } p-3 rounded-lg max-w-[200px] sm:max-w-md w-40 h-5 animate-pulse`}
+      />
+      <div className="w-12 h-3 bg-gray-200 rounded self-end animate-pulse" />
+    </div>
+
+    {isOwnMessage && (
+      <div className="w-8 h-8 bg-gray-300 rounded-full animate-pulse" />
+    )}
+  </div>
+);

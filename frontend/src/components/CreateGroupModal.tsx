@@ -3,7 +3,7 @@ import { toast } from "sonner";
 import { X } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { BASE_URL } from "@/lib/api";
 import { Input } from "@/components/ui/input";

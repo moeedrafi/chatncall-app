@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 
 import { getAPI } from "@/lib/api";
 import { useAuthStore } from "@/hooks/useAuth";
-import { Spinner } from "@/components/Spinner";
+import { Skeleton } from "@/components/Skeleton";
 
 type Conversation = {
   _id: string;
@@ -39,7 +39,7 @@ export const ChatList = () => {
   const { user } = useAuthStore();
   const { data, status } = useConversations();
 
-  if (status === "pending") return <Spinner />;
+  if (status === "pending") return <Skeleton />;
 
   if (status === "error")
     return (
