@@ -1,9 +1,9 @@
-import { Fragment } from "react";
+import { Fragment, useEffect } from "react";
 import { useParams } from "react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 import { cn } from "@/lib/utils";
-import { getAPI } from "@/lib/api";
+import { BASE_URL, getAPI } from "@/lib/api";
 import { useAuthStore } from "@/hooks/useAuth";
 import { ChatNavbar } from "@/components/ChatNavbar";
 import { MessageInput } from "@/components/MessageInput";
@@ -118,6 +118,7 @@ type Message = {
   body: string;
   conversation: string;
   sender: string;
+  seenBy: User[];
 };
 
 const getConversation = async (id: string) => {
@@ -154,6 +155,21 @@ const useMessages = (id: string) => {
   });
 };
 
+const useSeenMessage = () => {
+  return useMutation({
+    mutationFn: async (messageId: string) => {
+      const response = await fetch(`${BASE_URL}/messages/${messageId}/seen`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+      });
+
+      const data = await response.json();
+      console.log(data);
+    },
+  });
+};
+
 const Chat = () => {
   const { id } = useParams();
   const { user } = useAuthStore();
@@ -161,6 +177,18 @@ const Chat = () => {
   const { data: messagesData, status: messageStatus } = useMessages(
     id as string
   );
+  const { mutate: markSeen } = useSeenMessage();
+
+  useEffect(() => {
+    if (messageStatus === "success" && messagesData.length > 0 && user) {
+      const unseenMessages = messagesData.filter(
+        (msg: Message) =>
+          msg.sender !== user._id && !msg.seenBy.some((u) => u._id === user._id)
+      );
+
+      unseenMessages.forEach((msg: Message) => markSeen(msg._id));
+    }
+  }, [messagesData, markSeen, messageStatus, user]);
 
   if (status === "error") {
     return (

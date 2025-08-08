@@ -67,6 +67,10 @@ const seenMessage = asyncHandler(async (req, res) => {
   const message = await Message.findById(id);
   if (!message) throw new ApiError(404, "Message not found!");
 
+  if (message.seenBy.includes(req.user._id)) {
+    return res.status(200).json(new ApiResponse(200, {}, "Already Seen!"));
+  }
+
   const alreadySeen = message.seenBy.some(
     (user) => user.toString() === req.user._id.toString()
   );
