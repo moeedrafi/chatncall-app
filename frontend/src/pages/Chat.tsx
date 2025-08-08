@@ -158,14 +158,11 @@ const useMessages = (id: string) => {
 const useSeenMessage = () => {
   return useMutation({
     mutationFn: async (messageId: string) => {
-      const response = await fetch(`${BASE_URL}/messages/${messageId}/seen`, {
+      await fetch(`${BASE_URL}/messages/${messageId}/seen`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
       });
-
-      const data = await response.json();
-      console.log(data);
     },
   });
 };
@@ -209,6 +206,19 @@ const Chat = () => {
   const otherUser: User = data?.users.find(
     (friend: User) => friend._id !== user?._id
   );
+
+  const ownMessages =
+    messageStatus === "success"
+      ? messagesData.filter((msg: Message) => msg.sender === user?._id)
+      : [];
+
+  const lastSeenMessage: Message = [...ownMessages]
+    .reverse()
+    .find((msg) =>
+      msg.seenBy?.some((userId: string) => userId === otherUser._id)
+    );
+
+  console.log(lastSeenMessage);
 
   return (
     <section className="bg-gray-50 h-full w-full order-3">
@@ -263,7 +273,6 @@ const Chat = () => {
                           />
 
                           {/* MESSAGE + SEEN */}
-
                           <div className="flex flex-col">
                             <div
                               className={cn(
@@ -281,17 +290,16 @@ const Chat = () => {
                               </span>
                             </div>
 
-                            {/* {isOwnMessage && message.readBy && (
-                            <div className="self-end mt-1">
-                              <img
-                                src={
-                                  message.readBy[0].avatar || "/placeholder.svg"
-                                }
-                                alt={`Read by`}
-                                className="w-3 h-3 rounded-full object-cover"
-                              />
-                            </div>
-                          )} */}
+                            {isOwnMessage &&
+                              message._id === lastSeenMessage._id && (
+                                <div className="self-end mt-1">
+                                  <img
+                                    src={otherUser.avatar || "/placeholder.svg"}
+                                    alt={`Read by`}
+                                    className="w-3 h-3 rounded-full object-cover"
+                                  />
+                                </div>
+                              )}
                           </div>
                         </div>
                       </Fragment>
