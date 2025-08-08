@@ -1,6 +1,8 @@
+import { toast } from "sonner";
 import { useState } from "react";
 import { EllipsisVertical, Trash2 } from "lucide-react";
 
+import { BASE_URL } from "@/lib/api";
 import { Alert } from "@/components/Alert";
 import { AlertDialog } from "@/components/ui/alert-dialog";
 import {
@@ -10,11 +12,28 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-export const MessageDropdown = () => {
+export const MessageDropdown = ({ messageId }: { messageId: string }) => {
   const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false);
 
-  const handleDelete = () => {
-    setShowDeleteDialog(false);
+  const handleDelete = async (messageId: string) => {
+    try {
+      const response = await fetch(`${BASE_URL}/messages/${messageId}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        toast(data.message || "Deletion failed");
+        return;
+      }
+
+      toast(data.message);
+      setShowDeleteDialog(false);
+    } catch (error) {
+      toast("Delete Message error:" + error);
+    }
   };
 
   return (
@@ -40,7 +59,7 @@ export const MessageDropdown = () => {
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <Alert
           heading="Delete message"
-          handleDelete={handleDelete}
+          handleDelete={() => handleDelete(messageId)}
           subHeading="Are you sure you want to delete this message? This action cannot be undone."
         />
       </AlertDialog>

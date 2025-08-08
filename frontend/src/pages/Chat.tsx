@@ -256,7 +256,9 @@ const Chat = () => {
                             isOwnMessage && "self-end"
                           )}
                         >
-                          {isOwnMessage && <MessageDropdown />}
+                          {isOwnMessage && (
+                            <MessageDropdown messageId={message._id} />
+                          )}
 
                           <img
                             src={
