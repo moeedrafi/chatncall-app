@@ -138,9 +138,9 @@ const useConversation = (id: string) => {
   });
 };
 
-const getMessages = async (id: string) => {
+const getMessages = async (conversationId: string) => {
   try {
-    const data = await getAPI(`/messages/${id}`);
+    const data = await getAPI(`/messages/${conversationId}`);
     return data.data;
   } catch (error) {
     console.log("Fetching Messages error:", error);
@@ -187,6 +187,8 @@ const Chat = () => {
     }
   }, [messagesData, markSeen, messageStatus, user]);
 
+  if (!user) return null;
+
   if (status === "error") {
     return (
       <p className="text-center text-red-500 font-medium">
@@ -218,7 +220,7 @@ const Chat = () => {
       msg.seenBy?.some((userId: string) => userId === otherUser._id)
     );
 
-  console.log(lastSeenMessage);
+  console.log(messagesData);
 
   return (
     <section className="bg-gray-50 h-full w-full order-3">
@@ -315,7 +317,7 @@ const Chat = () => {
               </div>
             </div>
 
-            <MessageInput conversationId={id as string} />
+            <MessageInput userId={user._id} conversationId={id as string} />
           </>
         )}
       </div>
