@@ -1,4 +1,4 @@
-import { Fragment, useEffect } from "react";
+import { Fragment, useEffect, useRef } from "react";
 import { useParams } from "react-router";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
@@ -135,6 +135,7 @@ const useConversation = (id: string) => {
     queryKey: ["chat", { id }],
     queryFn: () => getConversation(id),
     staleTime: 5 * 60 * 1000, // 5 minutes
+    enabled: !!id,
   });
 };
 
@@ -152,6 +153,7 @@ const useMessages = (id: string) => {
     queryKey: ["messages", { id }],
     queryFn: () => getMessages(id),
     staleTime: 5 * 60 * 1000, // 5 minutes
+    enabled: !!id,
   });
 };
 
@@ -175,6 +177,13 @@ const Chat = () => {
     id as string
   );
   const { mutate: markSeen } = useSeenMessage();
+  const bottomRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (bottomRef.current) {
+      bottomRef.current.scrollIntoView({ behavior: "auto" });
+    }
+  }, [messagesData]);
 
   useEffect(() => {
     if (messageStatus === "success" && messagesData.length > 0 && user) {
@@ -315,6 +324,7 @@ const Chat = () => {
                     Start a conversation
                   </h3>
                 )}
+                <div ref={bottomRef} />
               </div>
             </div>
 
