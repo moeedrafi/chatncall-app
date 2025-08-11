@@ -11,29 +11,78 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-export const MessageDropdown = ({ messageId }: { messageId: string }) => {
-  const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false);
+type User = {
+  _id: string;
+  username: string;
+  avatar: string;
+};
 
-  const handleDelete = async (messageId: string) => {
-    try {
-      const response = await fetch(`${BASE_URL}/messages/${messageId}`, {
+type Message = {
+  _id: string;
+  body: string;
+  conversation: string;
+  sender: string;
+  seenBy: User[];
+};
+
+const useDeleteMessage = (id: string) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (messageId: string) =>
+      fetch(`${BASE_URL}/messages/${messageId}`, {
         method: "DELETE",
         credentials: "include",
+      }).then((res) => {
+        if (!res.ok) throw new Error("Failed to send");
+        return res.json();
+      }),
+    onMutate: async (messageId: string) => {
+      await queryClient.cancelQueries({
+        queryKey: ["messages", { id }],
       });
 
-      const data = await response.json();
+      const snapshot = queryClient.getQueryData(["messages", { id }]);
 
-      if (!response.ok) {
-        toast(data.message || "Deletion failed");
-        return;
-      }
+      queryClient.setQueryData(
+        ["messages", { id }],
+        (previousMessages: Message[] = []) =>
+          previousMessages.filter((msg) => msg._id !== messageId)
+      );
 
-      toast(data.message);
-      setShowDeleteDialog(false);
-    } catch (error) {
-      toast("Delete Message error:" + error);
-    }
+      return () => {
+        queryClient.setQueryData(["messages", { id }], snapshot);
+      };
+    },
+    onError: (error, _, rollback) => {
+      console.log("error: ", error);
+      rollback?.();
+    },
+    onSettled: () =>
+      queryClient.invalidateQueries({
+        queryKey: ["messages", { id }],
+      }),
+  });
+};
+
+export const MessageDropdown = ({
+  conversationId,
+  messageId,
+}: {
+  conversationId: string;
+  messageId: string;
+}) => {
+  const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false);
+
+  const deleteMessage = useDeleteMessage(conversationId);
+
+  const handleDelete = async () => {
+    deleteMessage.mutate(messageId, {
+      onSuccess: () => toast("Message deleted successfully"),
+      onError: (error) => toast(`Couldn't delete message: ${error}`),
+    });
   };
 
   return (
@@ -59,7 +108,7 @@ export const MessageDropdown = ({ messageId }: { messageId: string }) => {
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <Alert
           heading="Delete message"
-          handleDelete={() => handleDelete(messageId)}
+          handleDelete={handleDelete}
           subHeading="Are you sure you want to delete this message? This action cannot be undone."
         />
       </AlertDialog>

@@ -220,8 +220,6 @@ const Chat = () => {
       msg.seenBy?.some((userId: string) => userId === otherUser._id)
     );
 
-  console.log(messagesData);
-
   return (
     <section className="bg-gray-50 h-full w-full order-3">
       <div className="h-full flex flex-col justify-between">
@@ -259,7 +257,10 @@ const Chat = () => {
                           )}
                         >
                           {isOwnMessage && (
-                            <MessageDropdown messageId={message._id} />
+                            <MessageDropdown
+                              conversationId={id as string}
+                              messageId={message._id}
+                            />
                           )}
 
                           <img
