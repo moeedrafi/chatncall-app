@@ -55,7 +55,6 @@ const Chat = () => {
               image="/noAvatar.png"
             />
             <GroupMessages id={id as string} />
-            <MessageInput userId={user._id} conversationId={id as string} />
           </>
         ) : (
           <>
@@ -65,9 +64,10 @@ const Chat = () => {
               image={otherUser.avatar || "/noAvatar.png"}
             />
             <Messages id={id as string} otherUser={otherUser} />
-            <MessageInput userId={user._id} conversationId={id as string} />
           </>
         )}
+
+        <MessageInput userId={user._id} conversationId={id as string} />
       </div>
     </section>
   );

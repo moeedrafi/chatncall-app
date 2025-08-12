@@ -43,10 +43,9 @@ export const Messages = ({ id, otherUser }: MessagesProps) => {
   const { mutate: markSeen } = useSeenMessage();
 
   useEffect(() => {
-    if (bottomRef.current) {
-      bottomRef.current.scrollIntoView({ behavior: "auto" });
-    }
-  }, []);
+    if (!messagesData?.length) return;
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messagesData]);
 
   useEffect(() => {
     if (messageStatus === "success" && messagesData.length > 0 && user) {
@@ -58,6 +57,17 @@ export const Messages = ({ id, otherUser }: MessagesProps) => {
       unseenMessages.forEach((msg: Message) => markSeen(msg._id));
     }
   }, [messagesData, markSeen, messageStatus, user]);
+
+  if (messageStatus === "pending") {
+    return (
+      <div className="flex-1 overflow-y-auto">
+        <div className="flex flex-col gap-2 p-2 sm:p-4">
+          <MessageSkeleton />
+          <MessageSkeleton isOwnMessage />
+        </div>
+      </div>
+    );
+  }
 
   const ownMessages =
     messageStatus === "success"
@@ -73,12 +83,7 @@ export const Messages = ({ id, otherUser }: MessagesProps) => {
   return (
     <div className="flex-1 overflow-y-auto">
       <div className="flex flex-col gap-2 p-2 sm:p-4">
-        {messageStatus === "pending" ? (
-          <>
-            <MessageSkeleton />
-            <MessageSkeleton isOwnMessage />
-          </>
-        ) : messagesData.length > 0 ? (
+        {messagesData.length > 0 ? (
           messagesData.map((message: Message) => {
             const isOwnMessage = message.sender === user?._id;
 
