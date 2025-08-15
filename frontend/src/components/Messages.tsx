@@ -35,6 +35,11 @@ interface MessagesProps {
   otherUser: User;
 }
 
+type GroupedMessage = Message & {
+  isFirstInGroup: boolean;
+  isLastInGroup: boolean;
+};
+
 export const Messages = ({ id, otherUser }: MessagesProps) => {
   const { user } = useAuthStore();
   const bottomRef = useRef<HTMLDivElement | null>(null);
@@ -51,7 +56,8 @@ export const Messages = ({ id, otherUser }: MessagesProps) => {
     if (messageStatus === "success" && messagesData.length > 0 && user) {
       const unseenMessages = messagesData.filter(
         (msg: Message) =>
-          msg.sender !== user._id && !msg.seenBy.some((u) => u._id === user._id)
+          msg.sender !== user._id &&
+          !msg.seenBy?.some((u) => u._id === user._id)
       );
 
       unseenMessages.forEach((msg: Message) => markSeen(msg._id));
@@ -80,11 +86,22 @@ export const Messages = ({ id, otherUser }: MessagesProps) => {
       msg.seenBy?.some((userId: string) => userId === otherUser._id)
     );
 
+  const groupMessages = messagesData.map((message: Message, index: number) => {
+    const prevMessage = messagesData[index - 1];
+    const nextMessage = messagesData[index + 1];
+
+    const isFirstInGroup =
+      !prevMessage || message.sender !== prevMessage.sender;
+    const isLastInGroup = !nextMessage || message.sender !== nextMessage.sender;
+
+    return { ...message, isFirstInGroup, isLastInGroup };
+  });
+
   return (
     <div className="flex-1 overflow-y-auto">
       <div className="flex flex-col gap-2 p-2 sm:p-4">
-        {messagesData.length > 0 ? (
-          messagesData.map((message: Message) => {
+        {groupMessages.length > 0 ? (
+          groupMessages.map((message: GroupedMessage) => {
             const isOwnMessage = message.sender === user?._id;
 
             return (
@@ -99,19 +116,21 @@ export const Messages = ({ id, otherUser }: MessagesProps) => {
                     />
                   )}
 
-                  <img
-                    src={
-                      isOwnMessage
-                        ? user?.avatar || "/noAvatar.png"
-                        : otherUser.avatar || "/noAvatar.png"
-                    }
-                    width={32}
-                    height={32}
-                    className={cn(
-                      "w-8 h-8 rounded-full object-cover",
-                      isOwnMessage && "order-1"
-                    )}
-                  />
+                  {message.isLastInGroup ? (
+                    <img
+                      src="/noAvatar.png"
+                      width={32}
+                      height={32}
+                      className={`w-8 h-8 rounded-full object-cover ${
+                        isOwnMessage ? "order-1" : ""
+                      }`}
+                    />
+                  ) : isOwnMessage &&
+                    (!message.isFirstInGroup || !message.isLastInGroup) ? (
+                    <div className="order-1 w-8 h-8" />
+                  ) : (
+                    <div className="w-8 h-8" />
+                  )}
 
                   {/* MESSAGE + SEEN */}
                   <div className="flex flex-col">
@@ -120,7 +139,10 @@ export const Messages = ({ id, otherUser }: MessagesProps) => {
                         "flex gap-2 p-3 shadow-sm rounded-lg",
                         isOwnMessage
                           ? "bg-green-500 text-white"
-                          : "border border-gray-300"
+                          : "border border-gray-300",
+                        message.isFirstInGroup
+                          ? "rounded-b-lg rounded-l-lg"
+                          : "rounded-lg"
                       )}
                     >
                       <p className="text-xs sm:text-sm max-w-[200px] sm:max-w-md w-max">
