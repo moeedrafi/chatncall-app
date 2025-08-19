@@ -31,7 +31,7 @@ import {
 
 const Login = () => {
   const navigate = useNavigate();
-  const { login } = useAuthStore();
+  const { login, connectSocket } = useAuthStore();
   const form = useForm<LoginSchema>({
     resolver: zodResolver(loginSchema),
     defaultValues: { email: "", password: "" },
@@ -54,6 +54,7 @@ const Login = () => {
       }
 
       login(data.data);
+      connectSocket();
       form.reset();
       navigate("/");
       toast(data.message);

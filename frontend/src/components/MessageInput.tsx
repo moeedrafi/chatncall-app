@@ -16,8 +16,6 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import { useEffect } from "react";
-import { socket } from "@/utils/socket";
 
 type User = {
   _id: string;
@@ -140,25 +138,6 @@ const useSendMessage = (id: string, userId: string) => {
   });
 };
 
-const useMessageSocket = (id: string) => {
-  const queryClient = useQueryClient();
-
-  useEffect(() => {
-    const handler = (message: Message) => {
-      queryClient.setQueryData(["messages", { id }], (prev: Message[] = []) => [
-        ...prev,
-        message,
-      ]);
-    };
-
-    socket.on("new_message", handler);
-
-    return () => {
-      socket.off("new_message", handler);
-    };
-  }, [id, queryClient]);
-};
-
 export const MessageInput = ({
   conversationId,
   userId,
@@ -171,20 +150,12 @@ export const MessageInput = ({
     defaultValues: { message: "" },
   });
 
-  useMessageSocket(conversationId);
-
   const sendMessage = useSendMessage(conversationId, userId);
 
   const onSubmit = (values: ChatSchema) => {
     sendMessage.mutate(values, {
       onSuccess: () => form.reset(),
       onError: (error) => toast("Couldn't send message" + error),
-    });
-    console.log("socket_ID: " + socket.id);
-    socket.emit("new_message", {
-      body: values.message,
-      sender: userId,
-      conversationId,
     });
   };
 

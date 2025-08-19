@@ -9,6 +9,7 @@ import { Messages } from "@/components/Messages";
 import { ChatNavbar } from "@/components/ChatNavbar";
 import { MessageInput } from "@/components/MessageInput";
 import { GroupMessages } from "@/components/GroupMessages";
+import { useEffect } from "react";
 
 const useConversation = (id: string) => {
   return useQuery({
@@ -20,9 +21,21 @@ const useConversation = (id: string) => {
 };
 
 const Chat = () => {
-  const { id } = useParams();
-  const { user } = useAuthStore();
+  const { id } = useParams<{ id: string }>();
+  const { user, socket } = useAuthStore();
   const { data, status } = useConversation(id as string);
+
+  useEffect(() => {
+    if (!socket || !id) return;
+
+    socket.emit("join conversation", id);
+
+    return () => {
+      if (socket && id) {
+        socket.emit("leave conversation", id);
+      }
+    };
+  }, [socket, id]);
 
   if (!user) return null;
 

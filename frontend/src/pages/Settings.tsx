@@ -32,6 +32,7 @@ import { Alert } from "@/components/Alert";
 import { AlertDialog, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useAuthStore } from "@/hooks/useAuth";
 import { BASE_URL } from "@/lib/api";
+import { socket } from "@/utils/socket";
 
 const loginSchema = z.object({
   email: z.string().email(),
@@ -88,6 +89,7 @@ const Settings = () => {
       });
       const data = await response.json();
       logout();
+      socket.disconnect();
       console.log(data);
     } catch (error) {
       console.log("Logout error:", error);

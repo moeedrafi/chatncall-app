@@ -11,12 +11,32 @@ const io = new Server(server, {
 });
 
 io.on("connection", (socket) => {
-  console.log("A user connected:", socket.id);
+  const userId = socket.handshake.query.userId;
+  socket.userId = userId;
+  console.log("A user connected:", socket.id + " + " + userId);
 
-  // user sends a message
-  socket.on("new_message", (data) => {
-    console.log("New Message: ", data);
-    socket.broadcast.emit("new_message", data);
+  // join conversation
+  socket.on("join conversation", async (conversationId) => {
+    console.log(
+      `User ${socket.id} ${socket.userId} joined ${conversationId} conversation`
+    );
+    await socket.join(conversationId);
+  });
+
+  // leave conversation
+  socket.on("leave conversation", async (conversationId) => {
+    console.log(`User ${socket.userId} left ${conversationId} conversation`);
+    await socket.leave(conversationId);
+  });
+
+  // send message
+  socket.on("new_message", ({ conversationId, message, from }) => {
+    console.log(`Msg in ${conversationId} from ${from}: ${message}`);
+    // io.to(conversationId).emit("new_message", {
+    //   conversationId,
+    //   message,
+    //   from,
+    // });
   });
 
   // friend request sent
@@ -37,9 +57,7 @@ io.on("connection", (socket) => {
     io.emit("mark_seen", data);
   });
 
-  socket.on("disconnect", () => {
-    console.log("User disconnected:", socket.id);
-  });
+  socket.on("disconnect", () => console.log("User disconnected:", socket.id));
 });
 
 export { server };
