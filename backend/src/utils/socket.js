@@ -30,13 +30,17 @@ io.on("connection", (socket) => {
   });
 
   // send message
-  socket.on("new_message", ({ conversationId, message, from }) => {
-    console.log(`Msg in ${conversationId} from ${from}: ${message}`);
-    // io.to(conversationId).emit("new_message", {
-    //   conversationId,
-    //   message,
-    //   from,
-    // });
+  socket.on("send message", (conversationId, message) => {
+    console.log(`Msg in ${conversationId} from: ${message}`);
+    const newMessage = {
+      _id: Date.now().toString(),
+      body: message,
+      sender: socket.handshake.query.userId,
+      conversation: conversationId,
+      seenBy: [],
+    };
+
+    socket.to(conversationId).emit("send message", newMessage);
   });
 
   // friend request sent

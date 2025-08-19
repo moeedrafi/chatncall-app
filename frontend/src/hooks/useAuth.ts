@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import type { Message } from "@/lib/types";
 import { io, Socket } from "socket.io-client";
 
 interface User {
@@ -20,7 +21,7 @@ type Auth = {
 };
 
 interface ServerToClientEvents {
-  "new message": (message: string) => void;
+  "send message": (message: Message) => void;
   "user typing": (userId: string, conversationId: string) => void;
   "user online": (userId: string) => void;
   "user offline": (userId: string) => void;

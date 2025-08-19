@@ -16,6 +16,7 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
+import { useAuthStore } from "@/hooks/useAuth";
 
 type User = {
   _id: string;
@@ -145,6 +146,7 @@ export const MessageInput = ({
   conversationId: string;
   userId: string;
 }) => {
+  const { socket } = useAuthStore();
   const form = useForm<ChatSchema>({
     resolver: zodResolver(chatSchema),
     defaultValues: { message: "" },
@@ -157,6 +159,7 @@ export const MessageInput = ({
       onSuccess: () => form.reset(),
       onError: (error) => toast("Couldn't send message" + error),
     });
+    socket!.emit("send message", conversationId, values.message);
   };
 
   return (

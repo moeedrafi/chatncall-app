@@ -1,5 +1,5 @@
 import { Fragment, useEffect, useRef } from "react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/hooks/useAuth";
@@ -41,11 +41,29 @@ type GroupedMessage = Message & {
 };
 
 export const Messages = ({ id, otherUser }: MessagesProps) => {
-  const { user } = useAuthStore();
+  const { user, socket } = useAuthStore();
   const bottomRef = useRef<HTMLDivElement | null>(null);
+  const queryClient = useQueryClient();
   const { data: messagesData, status: messageStatus } = useMessages(id);
 
   const { mutate: markSeen } = useSeenMessage();
+
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleMessage = (msg: Message) => {
+      queryClient.setQueryData(["messages", { id }], (prev: Message[] = []) => [
+        ...prev,
+        msg,
+      ]);
+    };
+
+    socket.on("send message", handleMessage);
+
+    return () => {
+      socket.off("send message", handleMessage);
+    };
+  }, [socket, id, queryClient]);
 
   useEffect(() => {
     if (!messagesData?.length) return;
